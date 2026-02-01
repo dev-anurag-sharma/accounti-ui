@@ -4,7 +4,10 @@ import com.example.accountiui.dto.PartyDto;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -26,6 +29,34 @@ public class PartyController {
         return "parties/customers";
     }
 
+    @GetMapping("/customers/create")
+    public String createCustomer(Model model) {
+        PartyDto customer = new PartyDto();
+        customer.setType("CUSTOMER");
+        customer.setActive(true);
+        model.addAttribute("party", customer);
+        return "parties/customer-create";
+    }
+
+    @GetMapping("/customers/update/{id}")
+    public String updateCustomer(@PathVariable Long id, Model model) {
+        PartyDto customer = createDummyParties().stream()
+            .filter(p -> p.getId().equals(id) && ("CUSTOMER".equals(p.getType()) || "BOTH".equals(p.getType())))
+            .findFirst()
+            .orElse(new PartyDto());
+        
+        model.addAttribute("party", customer);
+        return "parties/customer-edit";
+    }
+
+    @PostMapping("/customers/save")
+    public String saveCustomer(PartyDto party, RedirectAttributes redirectAttributes) {
+        // In a real application, this would save to database
+        // For now, just redirect with success message
+        redirectAttributes.addFlashAttribute("successMessage", "Customer saved successfully!");
+        return "redirect:/parties/customers";
+    }
+
     @GetMapping("/suppliers")
     public String suppliers(Model model) {
         List<PartyDto> allParties = createDummyParties();
@@ -35,6 +66,34 @@ public class PartyController {
         
         model.addAttribute("suppliers", suppliers);
         return "parties/suppliers";
+    }
+
+    @GetMapping("/suppliers/create")
+    public String createSupplier(Model model) {
+        PartyDto supplier = new PartyDto();
+        supplier.setType("SUPPLIER");
+        supplier.setActive(true);
+        model.addAttribute("party", supplier);
+        return "parties/supplier-create";
+    }
+
+    @GetMapping("/suppliers/update/{id}")
+    public String updateSupplier(@PathVariable Long id, Model model) {
+        PartyDto supplier = createDummyParties().stream()
+            .filter(p -> p.getId().equals(id) && ("SUPPLIER".equals(p.getType()) || "BOTH".equals(p.getType())))
+            .findFirst()
+            .orElse(new PartyDto());
+        
+        model.addAttribute("party", supplier);
+        return "parties/supplier-edit";
+    }
+
+    @PostMapping("/suppliers/save")
+    public String saveSupplier(PartyDto party, RedirectAttributes redirectAttributes) {
+        // In a real application, this would save to database
+        // For now, just redirect with success message
+        redirectAttributes.addFlashAttribute("successMessage", "Supplier saved successfully!");
+        return "redirect:/parties/suppliers";
     }
 
     private List<PartyDto> createDummyParties() {

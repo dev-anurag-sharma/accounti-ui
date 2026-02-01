@@ -207,6 +207,102 @@
             </div>
         </div>
 
+        <!-- Add Receipt Modal -->
+        <div class="modal fade" id="addReceiptModal" tabindex="-1" aria-labelledby="addReceiptModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{/banking/receipt/save}" method="post">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addReceiptModalLabel" th:text="#{banking.add.receipt}">Add Receipt</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="receiptDate" class="form-label" th:text="#{common.date}">Date <span class="text-danger">*</span></label>
+                                    <input type="date" id="receiptDate" name="date" class="form-control" required th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                                </div>
+                                <div class="col-12">
+                                    <label for="receiptAmount" class="form-label" th:text="#{common.amount}">Amount <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        <input type="number" id="receiptAmount" name="debit" class="form-control" step="0.01" min="0.01" required>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label for="receiptParticulars" class="form-label" th:text="#{banking.particulars}">Particulars <span class="text-danger">*</span></label>
+                                    <input type="text" id="receiptParticulars" name="particulars" class="form-control" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="receiptReference" class="form-label" th:text="#{banking.reference}">Reference</label>
+                                    <input type="text" id="receiptReference" name="referenceNumber" class="form-control">
+                                </div>
+                                <div class="col-12">
+                                    <label for="receiptDescription" class="form-label" th:text="#{common.description}">Description</label>
+                                    <textarea id="receiptDescription" name="description" class="form-control" rows="2"></textarea>
+                                </div>
+                            </div>
+                            <input type="hidden" name="accountName" value="bank">
+                            <input type="hidden" name="voucherType" value="RECEIPT">
+                            <input type="hidden" name="credit" value="0">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{common.cancel}">Cancel</button>
+                            <button type="submit" class="btn btn-success" th:text="#{common.save}">Save Receipt</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Payment Modal -->
+        <div class="modal fade" id="addPaymentModal" tabindex="-1" aria-labelledby="addPaymentModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{/banking/payment/save}" method="post">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addPaymentModalLabel" th:text="#{banking.add.payment}">Add Payment</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="paymentDate" class="form-label" th:text="#{common.date}">Date <span class="text-danger">*</span></label>
+                                    <input type="date" id="paymentDate" name="date" class="form-control" required th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                                </div>
+                                <div class="col-12">
+                                    <label for="paymentAmount" class="form-label" th:text="#{common.amount}">Amount <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        <input type="number" id="paymentAmount" name="credit" class="form-control" step="0.01" min="0.01" required>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label for="paymentParticulars" class="form-label" th:text="#{banking.particulars}">Particulars <span class="text-danger">*</span></label>
+                                    <input type="text" id="paymentParticulars" name="particulars" class="form-control" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="paymentReference" class="form-label" th:text="#{banking.reference}">Reference</label>
+                                    <input type="text" id="paymentReference" name="referenceNumber" class="form-control">
+                                </div>
+                                <div class="col-12">
+                                    <label for="paymentDescription" class="form-label" th:text="#{common.description}">Description</label>
+                                    <textarea id="paymentDescription" name="description" class="form-control" rows="2"></textarea>
+                                </div>
+                            </div>
+                            <input type="hidden" name="accountName" value="bank">
+                            <input type="hidden" name="voucherType" value="PAYMENT">
+                            <input type="hidden" name="debit" value="0">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{common.cancel}">Cancel</button>
+                            <button type="submit" class="btn btn-danger" th:text="#{common.save}">Save Payment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <script>
             function filterByDate() {
                 const fromDate = document.getElementById('fromDate').value;
