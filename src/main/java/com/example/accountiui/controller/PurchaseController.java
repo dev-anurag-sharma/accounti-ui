@@ -136,38 +136,26 @@ public class PurchaseController {
         
         items.add(PurchaseItemDto.builder()
             .id(1L).productId(1L).productName("Premium Basmati Rice 25kg")
-            .hsnCode("1006").quantity(new BigDecimal("50"))
+            .description("HSN: 1006").quantity(new BigDecimal("50"))
             .unit("BAG").rate(new BigDecimal("950.00"))
-            .amount(new BigDecimal("47500.00"))
-            .gstRate(new BigDecimal("5.00"))
-            .cgst(new BigDecimal("1187.50"))
-            .sgst(new BigDecimal("1187.50"))
-            .igst(BigDecimal.ZERO)
-            .total(new BigDecimal("49875.00"))
+            .taxRate(new BigDecimal("5.00"))
+            .amount(new BigDecimal("49875.00"))
             .build());
         
         items.add(PurchaseItemDto.builder()
             .id(2L).productId(2L).productName("Refined Sunflower Oil 5L")
-            .hsnCode("1512").quantity(new BigDecimal("40"))
+            .description("HSN: 1512").quantity(new BigDecimal("40"))
             .unit("BOT").rate(new BigDecimal("520.00"))
-            .amount(new BigDecimal("20800.00"))
-            .gstRate(new BigDecimal("18.00"))
-            .cgst(new BigDecimal("1872.00"))
-            .sgst(new BigDecimal("1872.00"))
-            .igst(BigDecimal.ZERO)
-            .total(new BigDecimal("24544.00"))
+            .taxRate(new BigDecimal("18.00"))
+            .amount(new BigDecimal("24544.00"))
             .build());
         
         items.add(PurchaseItemDto.builder()
             .id(3L).productId(3L).productName("Premium Wheat Flour 10kg")
-            .hsnCode("1101").quantity(new BigDecimal("100"))
+            .description("HSN: 1101").quantity(new BigDecimal("100"))
             .unit("BAG").rate(new BigDecimal("220.00"))
-            .amount(new BigDecimal("22000.00"))
-            .gstRate(new BigDecimal("5.00"))
-            .cgst(new BigDecimal("550.00"))
-            .sgst(new BigDecimal("550.00"))
-            .igst(BigDecimal.ZERO)
-            .total(new BigDecimal("23100.00"))
+            .taxRate(new BigDecimal("5.00"))
+            .amount(new BigDecimal("23100.00"))
             .build());
         
         return items;

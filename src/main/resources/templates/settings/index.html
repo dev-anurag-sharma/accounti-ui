@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/layout :: head(#{settings.title})}"></div>
+</head>
+<body th:replace="~{fragments/layout :: layout(#{settings.title}, ~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="mb-4">
+            <h2 th:text="#{settings.title}">Settings</h2>
+            <p class="text-muted" th:text="#{settings.subtitle}">Manage your application preferences</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Company Information -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-building"></i> <span th:text="#{settings.company.title}">Company Information</span></h5>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label" th:text="#{settings.company.name}">Company Name</label>
+                                <input type="text" class="form-control" value="My Business Pvt Ltd">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" th:text="#{settings.company.gstin}">GSTIN</label>
+                                <input type="text" class="form-control" value="27AABCM1234F1Z5">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" th:text="#{settings.company.address}">Address</label>
+                                <textarea class="form-control" rows="3">123 Main Street, Business District
+Mumbai, Maharashtra 400001
+India</textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" th:text="#{settings.company.phone}">Phone</label>
+                                    <input type="tel" class="form-control" value="+91 22 1234 5678">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" th:text="#{settings.company.email}">Email</label>
+                                    <input type="email" class="form-control" value="info@mybusiness.com">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> <span th:text="#{common.save}">Save Changes</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Preferences -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-gear"></i> <span th:text="#{settings.preferences.title}">User Preferences</span></h5>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label" th:text="#{common.language}">Language</label>
+                                <select class="form-select" id="languageSelect">
+                                    <option value="en" th:text="#{settings.language.english}">English</option>
+                                    <option value="hi" th:text="#{settings.language.hinglish}">Hinglish</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" th:text="#{settings.date.format}">Date Format</label>
+                                <select class="form-select">
+                                    <option value="dd-MM-yyyy">DD-MM-YYYY (31-12-2024)</option>
+                                    <option value="MM-dd-yyyy">MM-DD-YYYY (12-31-2024)</option>
+                                    <option value="yyyy-MM-dd" selected>YYYY-MM-DD (2024-12-31)</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" th:text="#{settings.currency}">Currency</label>
+                                <select class="form-select">
+                                    <option value="INR" selected>₹ Indian Rupee (INR)</option>
+                                    <option value="USD">$ US Dollar (USD)</option>
+                                    <option value="EUR">€ Euro (EUR)</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" th:text="#{settings.timezone}">Timezone</label>
+                                <select class="form-select">
+                                    <option value="Asia/Kolkata" selected>Asia/Kolkata (IST)</option>
+                                    <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+                                    <option value="America/New_York">America/New York (EST)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> <span th:text="#{common.save}">Save Changes</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Appearance -->
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-palette"></i> <span th:text="#{settings.appearance.title}">Appearance</span></h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <strong th:text="#{common.darkmode}">Dark Mode</strong>
+                                <p class="text-muted small mb-0" th:text="#{settings.darkmode.description}">Switch to dark theme for better night viewing</p>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="darkModeSwitch" style="width: 3rem; height: 1.5rem;">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong th:text="#{settings.sidebar.compact}">Compact Sidebar</strong>
+                                <p class="text-muted small mb-0" th:text="#{settings.sidebar.description}">Show only icons in sidebar</p>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="compactSidebarSwitch" style="width: 3rem; height: 1.5rem;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tax Configuration -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-percent"></i> <span th:text="#{settings.tax.title}">Tax Configuration</span></h5>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label" th:text="#{settings.tax.default.rate}">Default GST Rate (%)</label>
+                                <select class="form-select">
+                                    <option value="0">0% (Exempted)</option>
+                                    <option value="5">5%</option>
+                                    <option value="12">12%</option>
+                                    <option value="18" selected>18%</option>
+                                    <option value="28">28%</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="taxInclusive" checked>
+                                <label class="form-check-label" for="taxInclusive" th:text="#{settings.tax.inclusive}">
+                                    Tax Inclusive Pricing
+                                </label>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="autoCalculateTax" checked>
+                                <label class="form-check-label" for="autoCalculateTax" th:text="#{settings.tax.auto.calculate}">
+                                    Auto Calculate Tax
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> <span th:text="#{common.save}">Save Changes</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoice Settings -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-file-earmark-text"></i> <span th:text="#{settings.invoice.title}">Invoice Settings</span></h5>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label" th:text="#{settings.invoice.prefix}">Invoice Prefix</label>
+                                <input type="text" class="form-control" value="INV">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" th:text="#{settings.invoice.next.number}">Next Invoice Number</label>
+                                <input type="number" class="form-control" value="2024-006">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" th:text="#{settings.invoice.payment.terms}">Default Payment Terms (days)</label>
+                                <select class="form-select">
+                                    <option value="0">Due on Receipt</option>
+                                    <option value="15">Net 15 days</option>
+                                    <option value="30" selected>Net 30 days</option>
+                                    <option value="45">Net 45 days</option>
+                                    <option value="60">Net 60 days</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" th:text="#{settings.invoice.footer}">Invoice Footer Note</label>
+                                <textarea class="form-control" rows="2">Thank you for your business!</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> <span th:text="#{common.save}">Save Changes</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Settings -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-shield-lock"></i> <span th:text="#{settings.security.title}">Security</span></h5>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label" th:text="#{settings.security.current.password}">Current Password</label>
+                                <input type="password" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" th:text="#{settings.security.new.password}">New Password</label>
+                                <input type="password" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" th:text="#{settings.security.confirm.password}">Confirm Password</label>
+                                <input type="password" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-key"></i> <span th:text="#{settings.security.change.password}">Change Password</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Backup & Data -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="bi bi-cloud-download"></i> <span th:text="#{settings.backup.title}">Backup & Data</span></h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <p class="text-muted" th:text="#{settings.backup.description}">Export your data or create a backup</p>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-outline-primary">
+                                <i class="bi bi-download"></i> <span th:text="#{settings.backup.export.data}">Export All Data</span>
+                            </button>
+                            <button type="button" class="btn btn-outline-success">
+                                <i class="bi bi-cloud-arrow-down"></i> <span th:text="#{settings.backup.create}">Create Backup</span>
+                            </button>
+                            <button type="button" class="btn btn-outline-warning">
+                                <i class="bi bi-cloud-arrow-up"></i> <span th:text="#{settings.backup.restore}">Restore from Backup</span>
+                            </button>
+                        </div>
+                        <hr class="my-3">
+                        <div class="alert alert-warning mb-0">
+                            <small>
+                                <i class="bi bi-exclamation-triangle"></i>
+                                <strong th:text="#{settings.backup.warning}">Warning:</strong>
+                                <span th:text="#{settings.backup.warning.text}">Restore operation will overwrite existing data. Please create a backup before restoring.</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Language Selector
+            document.getElementById('languageSelect').addEventListener('change', function() {
+                const lang = this.value;
+                window.location.href = '?lang=' + lang;
+            });
+
+            // Dark Mode Toggle
+            document.getElementById('darkModeSwitch').addEventListener('change', function() {
+                if (this.checked) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            });
+
+            // Compact Sidebar Toggle
+            document.getElementById('compactSidebarSwitch').addEventListener('change', function() {
+                const sidebar = document.querySelector('.sidebar');
+                if (sidebar) {
+                    if (this.checked) {
+                        sidebar.classList.add('compact');
+                    } else {
+                        sidebar.classList.remove('compact');
+                    }
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

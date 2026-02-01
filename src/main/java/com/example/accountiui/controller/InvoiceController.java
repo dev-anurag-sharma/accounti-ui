@@ -136,38 +136,26 @@ public class InvoiceController {
         
         items.add(InvoiceItemDto.builder()
             .id(1L).productId(1L).productName("Premium Basmati Rice 25kg")
-            .hsnCode("1006").quantity(new BigDecimal("20"))
+            .description("HSN: 1006").quantity(new BigDecimal("20"))
             .unit("BAG").rate(new BigDecimal("1200.00"))
-            .amount(new BigDecimal("24000.00"))
-            .gstRate(new BigDecimal("5.00"))
-            .cgst(new BigDecimal("600.00"))
-            .sgst(new BigDecimal("600.00"))
-            .igst(BigDecimal.ZERO)
-            .total(new BigDecimal("25200.00"))
+            .taxRate(new BigDecimal("5.00"))
+            .amount(new BigDecimal("25200.00"))
             .build());
         
         items.add(InvoiceItemDto.builder()
             .id(2L).productId(2L).productName("Refined Sunflower Oil 5L")
-            .hsnCode("1512").quantity(new BigDecimal("15"))
+            .description("HSN: 1512").quantity(new BigDecimal("15"))
             .unit("BOT").rate(new BigDecimal("650.00"))
-            .amount(new BigDecimal("9750.00"))
-            .gstRate(new BigDecimal("18.00"))
-            .cgst(new BigDecimal("877.50"))
-            .sgst(new BigDecimal("877.50"))
-            .igst(BigDecimal.ZERO)
-            .total(new BigDecimal("11505.00"))
+            .taxRate(new BigDecimal("18.00"))
+            .amount(new BigDecimal("11505.00"))
             .build());
         
         items.add(InvoiceItemDto.builder()
             .id(3L).productId(3L).productName("Premium Wheat Flour 10kg")
-            .hsnCode("1101").quantity(new BigDecimal("30"))
+            .description("HSN: 1101").quantity(new BigDecimal("30"))
             .unit("BAG").rate(new BigDecimal("280.00"))
-            .amount(new BigDecimal("8400.00"))
-            .gstRate(new BigDecimal("5.00"))
-            .cgst(new BigDecimal("210.00"))
-            .sgst(new BigDecimal("210.00"))
-            .igst(BigDecimal.ZERO)
-            .total(new BigDecimal("8820.00"))
+            .taxRate(new BigDecimal("5.00"))
+            .amount(new BigDecimal("8820.00"))
             .build());
         
         return items;
