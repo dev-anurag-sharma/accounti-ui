@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <div th:replace="~{fragments/layout :: head(#{purchase.create})}"></div>
+</head>
+<body th:replace="~{fragments/layout :: layout(#{purchase.create}, ~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 th:text="#{purchase.create}">Create Purchase</h2>
+                <p class="text-muted" th:text="#{purchase.create.description}">Create a new purchase order</p>
+            </div>
+            <div>
+                <button class="btn btn-outline-secondary" onclick="location.href='/purchase/list'">
+                    <i class="bi bi-arrow-left"></i> <span th:text="#{purchase.back.to.list}">Back to List</span>
+                </button>
+            </div>
+        </div>
+
+        <form th:action="@{/purchase/save}" method="post">
+            <div class="row g-4">
+                <!-- Purchase Details -->
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0" th:text="#{purchase.details}">Purchase Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="supplier" class="form-label" th:text="#{purchase.supplier}">Supplier</label>
+                                    <select id="supplier" name="supplierId" class="form-select" required>
+                                        <option value="" th:text="#{purchase.select.supplier}">Select supplier...</option>
+                                        <option th:each="supplier : ${suppliers}" 
+                                                th:value="${supplier.id}" 
+                                                th:text="${supplier.name}">ABC Suppliers</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="purchaseDate" class="form-label" th:text="#{purchase.date}">Purchase Date</label>
+                                    <input type="date" id="purchaseDate" name="purchaseDate" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Purchase Items -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0" th:text="#{purchase.items}">Items</h5>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addItemRow()">
+                                    <i class="bi bi-plus-circle"></i> <span th:text="#{purchase.add.item}">Add Item</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table mb-0" id="itemsTable">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 35%" th:text="#{purchase.product}">Product</th>
+                                            <th style="width: 10%" class="text-center" th:text="#{purchase.quantity}">Qty</th>
+                                            <th style="width: 15%" class="text-end" th:text="#{purchase.rate}">Rate</th>
+                                            <th style="width: 10%" class="text-end" th:text="#{purchase.gst}">GST %</th>
+                                            <th style="width: 20%" class="text-end" th:text="#{purchase.total}">Total</th>
+                                            <th style="width: 10%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="itemsTableBody">
+                                        <tr class="item-row">
+                                            <td>
+                                                <select name="items[0].productId" class="form-select form-select-sm" required>
+                                                    <option value="" th:text="#{purchase.select.product}">Select product...</option>
+                                                    <option th:each="product : ${products}" 
+                                                            th:value="${product.id}" 
+                                                            th:text="${product.name}">Product Name</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="items[0].quantity" class="form-control form-control-sm text-center" 
+                                                       min="1" value="1" required onchange="calculateRowTotal(this)">
+                                            </td>
+                                            <td>
+                                                <input type="number" name="items[0].rate" class="form-control form-control-sm text-end" 
+                                                       step="0.01" min="0" required onchange="calculateRowTotal(this)">
+                                            </td>
+                                            <td>
+                                                <input type="number" name="items[0].gstRate" class="form-control form-control-sm text-end" 
+                                                       step="0.01" min="0" value="18" required onchange="calculateRowTotal(this)">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control form-control-sm text-end row-total" readonly value="0.00">
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeItemRow(this)">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0" th:text="#{purchase.notes}">Notes</h5>
+                        </div>
+                        <div class="card-body">
+                            <textarea name="notes" class="form-control" rows="3" 
+                                      th:placeholder="#{purchase.notes.placeholder}">Additional notes or terms...</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Sidebar -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm sticky-top" style="top: 1rem;">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0" th:text="#{purchase.summary}">Summary</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span th:text="#{purchase.subtotal}">Subtotal:</span>
+                                <strong id="subtotal">₹0.00</strong>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span th:text="#{purchase.cgst}">CGST:</span>
+                                <span id="cgst">₹0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span th:text="#{purchase.sgst}">SGST:</span>
+                                <span id="sgst">₹0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span th:text="#{purchase.igst}">IGST:</span>
+                                <span id="igst">₹0.00</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0" th:text="#{purchase.total}">Total:</h5>
+                                <h4 class="mb-0 text-primary" id="grandTotal">₹0.00</h4>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" name="action" value="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> <span th:text="#{purchase.submit}">Submit Purchase</span>
+                                </button>
+                                <button type="submit" name="action" value="draft" class="btn btn-outline-secondary">
+                                    <i class="bi bi-save"></i> <span th:text="#{purchase.save.draft}">Save as Draft</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <script>
+            let itemIndex = 1;
+            
+            function addItemRow() {
+                const tbody = document.getElementById('itemsTableBody');
+                const newRow = tbody.querySelector('.item-row').cloneNode(true);
+                
+                // Update field names with new index
+                newRow.querySelectorAll('select, input').forEach(field => {
+                    if (field.name) {
+                        field.name = field.name.replace(/\[\d+\]/, `[${itemIndex}]`);
+                    }
+                    if (field.type !== 'button') {
+                        field.value = field.classList.contains('row-total') ? '0.00' : '';
+                    }
+                });
+                
+                tbody.appendChild(newRow);
+                itemIndex++;
+            }
+            
+            function removeItemRow(button) {
+                const tbody = document.getElementById('itemsTableBody');
+                if (tbody.querySelectorAll('.item-row').length > 1) {
+                    button.closest('.item-row').remove();
+                    calculateTotal();
+                }
+            }
+            
+            function calculateRowTotal(input) {
+                const row = input.closest('.item-row');
+                const quantity = parseFloat(row.querySelector('[name*="quantity"]').value) || 0;
+                const rate = parseFloat(row.querySelector('[name*="rate"]').value) || 0;
+                const gstRate = parseFloat(row.querySelector('[name*="gstRate"]').value) || 0;
+                
+                const subtotal = quantity * rate;
+                const gstAmount = subtotal * (gstRate / 100);
+                const total = subtotal + gstAmount;
+                
+                row.querySelector('.row-total').value = total.toFixed(2);
+                calculateTotal();
+            }
+            
+            function calculateTotal() {
+                let subtotal = 0;
+                let totalGst = 0;
+                
+                document.querySelectorAll('.item-row').forEach(row => {
+                    const quantity = parseFloat(row.querySelector('[name*="quantity"]').value) || 0;
+                    const rate = parseFloat(row.querySelector('[name*="rate"]').value) || 0;
+                    const gstRate = parseFloat(row.querySelector('[name*="gstRate"]').value) || 0;
+                    
+                    const itemSubtotal = quantity * rate;
+                    const itemGst = itemSubtotal * (gstRate / 100);
+                    
+                    subtotal += itemSubtotal;
+                    totalGst += itemGst;
+                });
+                
+                const cgst = totalGst / 2;
+                const sgst = totalGst / 2;
+                const grandTotal = subtotal + totalGst;
+                
+                document.getElementById('subtotal').textContent = '₹' + subtotal.toFixed(2);
+                document.getElementById('cgst').textContent = '₹' + cgst.toFixed(2);
+                document.getElementById('sgst').textContent = '₹' + sgst.toFixed(2);
+                document.getElementById('igst').textContent = '₹0.00';
+                document.getElementById('grandTotal').textContent = '₹' + grandTotal.toFixed(2);
+            }
+        </script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/layout :: head(#{accounts.chart.title})}"></div>
+</head>
+<body th:replace="~{fragments/layout :: layout(#{accounts.chart.title}, ~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 th:text="#{accounts.chart.title}">Chart of Accounts</h2>
+                <p class="text-muted" th:text="#{accounts.chart.subtitle}">All accounts organized by type</p>
+            </div>
+            <div>
+                <button class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> <span th:text="#{accounts.add.account}">Add Account</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Asset Accounts -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-success bg-opacity-10">
+                <h5 class="mb-0 text-success"><i class="bi bi-bank"></i> <span th:text="#{accounts.type.asset}">Assets</span></h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th th:text="#{accounts.code}">Code</th>
+                                <th th:text="#{accounts.name}">Account Name</th>
+                                <th th:text="#{accounts.category}">Category</th>
+                                <th th:text="#{accounts.balance}">Balance</th>
+                                <th th:text="#{common.actions}">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="account : ${accountsByType['ASSET']}">
+                                <td><strong th:text="${account.code}">1001</strong></td>
+                                <td th:text="${account.name}">Cash in Hand</td>
+                                <td><span class="badge bg-light text-dark" th:text="${account.category}">Current Asset</span></td>
+                                <td><strong class="text-success" th:text="'₹' + ${#numbers.formatDecimal(account.currentBalance, 0, 'COMMA', 2, 'POINT')}">₹125,000.00</strong></td>
+                                <td>
+                                    <a th:href="@{/accounts/general-ledger(accountId=${account.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-book"></i> <span th:text="#{accounts.view.ledger}">Ledger</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liability Accounts -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-danger bg-opacity-10">
+                <h5 class="mb-0 text-danger"><i class="bi bi-credit-card"></i> <span th:text="#{accounts.type.liability}">Liabilities</span></h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th th:text="#{accounts.code}">Code</th>
+                                <th th:text="#{accounts.name}">Account Name</th>
+                                <th th:text="#{accounts.category}">Category</th>
+                                <th th:text="#{accounts.balance}">Balance</th>
+                                <th th:text="#{common.actions}">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="account : ${accountsByType['LIABILITY']}">
+                                <td><strong th:text="${account.code}">2001</strong></td>
+                                <td th:text="${account.name}">Accounts Payable</td>
+                                <td><span class="badge bg-light text-dark" th:text="${account.category}">Current Liability</span></td>
+                                <td><strong class="text-danger" th:text="'₹' + ${#numbers.formatDecimal(account.currentBalance, 0, 'COMMA', 2, 'POINT')}">₹123,450.00</strong></td>
+                                <td>
+                                    <a th:href="@{/accounts/general-ledger(accountId=${account.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-book"></i> <span th:text="#{accounts.view.ledger}">Ledger</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Income Accounts -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-info bg-opacity-10">
+                <h5 class="mb-0 text-info"><i class="bi bi-graph-up-arrow"></i> <span th:text="#{accounts.type.income}">Income</span></h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th th:text="#{accounts.code}">Code</th>
+                                <th th:text="#{accounts.name}">Account Name</th>
+                                <th th:text="#{accounts.category}">Category</th>
+                                <th th:text="#{accounts.balance}">Balance</th>
+                                <th th:text="#{common.actions}">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="account : ${accountsByType['INCOME']}">
+                                <td><strong th:text="${account.code}">3001</strong></td>
+                                <td th:text="${account.name}">Sales - Products</td>
+                                <td><span class="badge bg-light text-dark" th:text="${account.category}">Operating Income</span></td>
+                                <td><strong class="text-info" th:text="'₹' + ${#numbers.formatDecimal(account.currentBalance, 0, 'COMMA', 2, 'POINT')}">₹850,000.00</strong></td>
+                                <td>
+                                    <a th:href="@{/accounts/general-ledger(accountId=${account.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-book"></i> <span th:text="#{accounts.view.ledger}">Ledger</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expense Accounts -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-warning bg-opacity-10">
+                <h5 class="mb-0 text-warning"><i class="bi bi-graph-down-arrow"></i> <span th:text="#{accounts.type.expense}">Expenses</span></h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th th:text="#{accounts.code}">Code</th>
+                                <th th:text="#{accounts.name}">Account Name</th>
+                                <th th:text="#{accounts.category}">Category</th>
+                                <th th:text="#{accounts.balance}">Balance</th>
+                                <th th:text="#{common.actions}">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="account : ${accountsByType['EXPENSE']}">
+                                <td><strong th:text="${account.code}">4001</strong></td>
+                                <td th:text="${account.name}">Purchase - Raw Materials</td>
+                                <td><span class="badge bg-light text-dark" th:text="${account.category}">Direct Expense</span></td>
+                                <td><strong class="text-warning" th:text="'₹' + ${#numbers.formatDecimal(account.currentBalance, 0, 'COMMA', 2, 'POINT')}">₹450,000.00</strong></td>
+                                <td>
+                                    <a th:href="@{/accounts/general-ledger(accountId=${account.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-book"></i> <span th:text="#{accounts.view.ledger}">Ledger</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Equity Accounts -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-header bg-primary bg-opacity-10">
+                <h5 class="mb-0 text-primary"><i class="bi bi-building"></i> <span th:text="#{accounts.type.equity}">Equity</span></h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th th:text="#{accounts.code}">Code</th>
+                                <th th:text="#{accounts.name}">Account Name</th>
+                                <th th:text="#{accounts.category}">Category</th>
+                                <th th:text="#{accounts.balance}">Balance</th>
+                                <th th:text="#{common.actions}">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="account : ${accountsByType['EQUITY']}">
+                                <td><strong th:text="${account.code}">5001</strong></td>
+                                <td th:text="${account.name}">Owner's Capital</td>
+                                <td><span class="badge bg-light text-dark" th:text="${account.category}">Capital</span></td>
+                                <td><strong class="text-primary" th:text="'₹' + ${#numbers.formatDecimal(account.currentBalance, 0, 'COMMA', 2, 'POINT')}">₹1,500,000.00</strong></td>
+                                <td>
+                                    <a th:href="@{/accounts/general-ledger(accountId=${account.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-book"></i> <span th:text="#{accounts.view.ledger}">Ledger</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

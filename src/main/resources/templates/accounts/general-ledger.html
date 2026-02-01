@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/layout :: head(#{accounts.ledger.title})}"></div>
+</head>
+<body th:replace="~{fragments/layout :: layout(#{accounts.ledger.title}, ~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 th:text="#{accounts.ledger.title}">General Ledger</h2>
+                <p class="text-muted" th:text="#{accounts.ledger.subtitle}">View account transactions</p>
+            </div>
+            <div>
+                <a href="/accounts/chart-of-accounts" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> <span th:text="#{common.back}">Back</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Account Selection -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="row align-items-end">
+                    <div class="col-md-6">
+                        <label class="form-label" th:text="#{accounts.select.account}">Select Account</label>
+                        <select class="form-select" id="accountSelector" onchange="loadLedger()">
+                            <option value="" th:text="#{accounts.select.placeholder}">-- Select an account --</option>
+                            <option th:each="account : ${accounts}" 
+                                    th:value="${account.id}" 
+                                    th:text="${account.code} + ' - ' + ${account.name}"
+                                    th:selected="${selectedAccount != null && account.id == selectedAccount.id}">
+                                1001 - Cash in Hand
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" th:text="#{accounts.from.date}">From Date</label>
+                        <input type="date" class="form-control" th:value="${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" th:text="#{accounts.to.date}">To Date</label>
+                        <input type="date" class="form-control" th:value="${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ledger View -->
+        <div th:if="${selectedAccount != null}">
+            <!-- Account Info -->
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5 th:text="${selectedAccount.code} + ' - ' + ${selectedAccount.name}">1001 - Cash in Hand</h5>
+                            <p class="text-muted mb-0">
+                                <span class="badge bg-light text-dark" th:text="${selectedAccount.type}">ASSET</span>
+                                <span class="mx-2">•</span>
+                                <span th:text="${selectedAccount.category}">Current Asset</span>
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <small class="text-muted" th:text="#{accounts.current.balance}">Current Balance</small>
+                            <h4 class="mb-0" th:text="'₹' + ${#numbers.formatDecimal(selectedAccount.currentBalance, 0, 'COMMA', 2, 'POINT')}">₹125,000.00</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0" th:text="#{accounts.transactions}">Transactions</h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-2">
+                            <i class="bi bi-printer"></i> <span th:text="#{common.print}">Print</span>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-file-excel"></i> <span th:text="#{common.export}">Export</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th th:text="#{common.date}">Date</th>
+                                    <th th:text="#{accounts.voucher}">Voucher No.</th>
+                                    <th th:text="#{accounts.particulars}">Particulars</th>
+                                    <th th:text="#{accounts.reference}">Reference</th>
+                                    <th class="text-end" th:text="#{accounts.debit}">Debit</th>
+                                    <th class="text-end" th:text="#{accounts.credit}">Credit</th>
+                                    <th class="text-end" th:text="#{accounts.balance}">Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="txn : ${transactions}">
+                                    <td th:text="${#temporals.format(txn.date, 'dd MMM yyyy')}">01 Jan 2024</td>
+                                    <td>
+                                        <strong th:text="${txn.voucherNumber}">RCT-001</strong><br>
+                                        <small class="text-muted" th:text="${txn.voucherType}">RECEIPT</small>
+                                    </td>
+                                    <td>
+                                        <span th:text="${txn.particulars}">Payment received from customer</span>
+                                        <div th:if="${txn.description != null}">
+                                            <small class="text-muted" th:text="${txn.description}">Additional notes</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span th:if="${txn.referenceNumber != null}" 
+                                              class="badge bg-light text-dark"
+                                              th:text="${txn.referenceNumber}">INV-001</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span th:if="${txn.debit != null && txn.debit.compareTo(T(java.math.BigDecimal).ZERO) > 0}"
+                                              class="text-success fw-bold"
+                                              th:text="'₹' + ${#numbers.formatDecimal(txn.debit, 0, 'COMMA', 2, 'POINT')}">₹50,000.00</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span th:if="${txn.credit != null && txn.credit.compareTo(T(java.math.BigDecimal).ZERO) > 0}"
+                                              class="text-danger fw-bold"
+                                              th:text="'₹' + ${#numbers.formatDecimal(txn.credit, 0, 'COMMA', 2, 'POINT')}">₹25,000.00</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <strong th:text="'₹' + ${#numbers.formatDecimal(txn.runningBalance, 0, 'COMMA', 2, 'POINT')}">₹125,000.00</strong>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Account Selected -->
+        <div th:unless="${selectedAccount != null}" class="text-center py-5">
+            <i class="bi bi-book text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3 text-muted" th:text="#{accounts.select.message}">Please select an account to view ledger</h4>
+        </div>
+
+        <script>
+            function loadLedger() {
+                const accountId = document.getElementById('accountSelector').value;
+                if (accountId) {
+                    window.location.href = '/accounts/general-ledger?accountId=' + accountId;
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>

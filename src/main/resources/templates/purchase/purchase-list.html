@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <div th:replace="~{fragments/layout :: head(#{purchase.purchases})}"></div>
+</head>
+<body th:replace="~{fragments/layout :: layout(#{purchase.purchases}, ~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 th:text="#{purchase.purchases}">Purchases</h2>
+                <p class="text-muted" th:text="#{purchase.list.description}">Manage your purchases</p>
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="location.href='/purchase/create'">
+                    <i class="bi bi-plus-circle"></i> <span th:text="#{purchase.create}">Create Purchase</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter and Search Bar -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" th:placeholder="#{purchase.search}" placeholder="Search purchases...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option value="" th:text="#{purchase.all.statuses}">All Statuses</option>
+                            <option value="PAID" th:text="#{purchase.status.paid}">Paid</option>
+                            <option value="RECEIVED" th:text="#{purchase.status.received}">Received</option>
+                            <option value="CANCELLED" th:text="#{purchase.status.cancelled}">Cancelled</option>
+                            <option value="DRAFT" th:text="#{purchase.status.draft}">Draft</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control" th:placeholder="#{purchase.from.date}">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-primary w-100">
+                            <i class="bi bi-filter"></i> <span th:text="#{purchase.filter}">Filter</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchases Table -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th th:text="#{purchase.no}">Purchase No</th>
+                                <th th:text="#{purchase.date}">Date</th>
+                                <th th:text="#{purchase.supplier}">Supplier</th>
+                                <th class="text-end" th:text="#{purchase.amount}">Amount</th>
+                                <th th:text="#{purchase.status}">Status</th>
+                                <th class="text-end" th:text="#{purchase.actions}">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="purchase : ${purchases}">
+                                <td><strong th:text="${purchase.number}">PUR-2024-001</strong></td>
+                                <td th:text="${#temporals.format(purchase.date, 'dd-MMM-yyyy')}">15-Jan-2024</td>
+                                <td th:text="${purchase.supplierName}">ABC Suppliers</td>
+                                <td class="text-end">
+                                    <strong th:text="'₹' + ${#numbers.formatDecimal(purchase.totalAmount, 0, 'COMMA', 2, 'POINT')}">₹45,500.00</strong>
+                                </td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${purchase.status == 'PAID' ? 'bg-success' : 
+                                                           purchase.status == 'RECEIVED' ? 'bg-warning' : 
+                                                           purchase.status == 'CANCELLED' ? 'bg-secondary' : 'bg-secondary'}"
+                                          th:text="${purchase.status}">PAID</span>
+                                </td>
+                                <td class="text-end">
+                                    <a th:href="@{/purchase/view/{id}(id=${purchase.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> <span th:text="#{purchase.view}">View</span>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(purchases)}">
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                    <p class="mt-2" th:text="#{purchase.no.purchases}">No purchases found</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white" th:if="${!#lists.isEmpty(purchases)}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-muted">
+                        <span th:text="#{purchase.showing}">Showing</span> 
+                        <strong th:text="${purchases.size()}">10</strong> 
+                        <span th:text="#{purchase.purchases}">purchases</span>
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
