@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/layout :: head(#{banking.bankbook.title})}"></div>
+</head>
+<body th:replace="~{fragments/layout :: layout(#{banking.bankbook.title}, ~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 th:text="#{banking.bankbook.title}">Bank Book - HDFC Current Account</h2>
+                <p class="text-muted" th:text="#{banking.bankbook.subtitle}">Track all bank receipts and payments</p>
+            </div>
+            <div>
+                <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#addReceiptModal">
+                    <i class="bi bi-plus-circle"></i> <span th:text="#{banking.add.receipt}">Add Receipt</span>
+                </button>
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
+                    <i class="bi bi-dash-circle"></i> <span th:text="#{banking.add.payment}">Add Payment</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Date Filter & Opening Balance -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="row align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label" th:text="#{banking.from.date}">From Date</label>
+                        <input type="date" class="form-control" id="fromDate" th:value="${fromDate}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" th:text="#{banking.to.date}">To Date</label>
+                        <input type="date" class="form-control" id="toDate" th:value="${toDate}">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" onclick="filterByDate()">
+                            <i class="bi bi-funnel"></i> <span th:text="#{common.filter}">Filter</span>
+                        </button>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <small class="text-muted" th:text="#{banking.opening.balance}">Opening Balance</small>
+                        <h4 class="mb-0 text-primary" th:text="'₹' + ${#numbers.formatDecimal(openingBalance, 0, 'COMMA', 2, 'POINT')}">₹850,000.00</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-bank text-primary" style="font-size: 2rem;"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <small class="text-muted" th:text="#{banking.opening.balance}">Opening Balance</small>
+                                <h5 class="mb-0" th:text="'₹' + ${#numbers.formatDecimal(openingBalance, 0, 'COMMA', 2, 'POINT')}">₹850,000.00</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-arrow-down-circle text-success" style="font-size: 2rem;"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <small class="text-muted" th:text="#{banking.total.receipts}">Total Receipts</small>
+                                <h5 class="mb-0 text-success" th:text="'₹' + ${#numbers.formatDecimal(totalReceipts, 0, 'COMMA', 2, 'POINT')}">₹1,200,000.00</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-arrow-up-circle text-danger" style="font-size: 2rem;"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <small class="text-muted" th:text="#{banking.total.payments}">Total Payments</small>
+                                <h5 class="mb-0 text-danger" th:text="'₹' + ${#numbers.formatDecimal(totalPayments, 0, 'COMMA', 2, 'POINT')}">₹980,000.00</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100 bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-cash-stack" style="font-size: 2rem;"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <small class="text-white-50" th:text="#{banking.closing.balance}">Closing Balance</small>
+                                <h5 class="mb-0" th:text="'₹' + ${#numbers.formatDecimal(closingBalance, 0, 'COMMA', 2, 'POINT')}">₹1,070,000.00</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transactions Table -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0" th:text="#{banking.transactions}">Bank Transactions</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-primary me-2" onclick="printBankBook()">
+                        <i class="bi bi-printer"></i> <span th:text="#{common.print}">Print</span>
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" onclick="exportBankBook()">
+                        <i class="bi bi-file-excel"></i> <span th:text="#{common.export}">Export</span>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th th:text="#{common.date}">Date</th>
+                                <th th:text="#{banking.voucher.no}">Voucher No</th>
+                                <th th:text="#{banking.voucher.type}">Voucher Type</th>
+                                <th th:text="#{banking.particulars}">Particulars</th>
+                                <th th:text="#{banking.reference}">Reference</th>
+                                <th class="text-end" th:text="#{banking.receipt.debit}">Receipt (Dr)</th>
+                                <th class="text-end" th:text="#{banking.payment.credit}">Payment (Cr)</th>
+                                <th class="text-end" th:text="#{banking.balance}">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Opening Balance Row -->
+                            <tr class="table-active">
+                                <td colspan="5"><strong th:text="#{banking.opening.balance}">Opening Balance</strong></td>
+                                <td class="text-end"></td>
+                                <td class="text-end"></td>
+                                <td class="text-end">
+                                    <strong th:text="'₹' + ${#numbers.formatDecimal(openingBalance, 0, 'COMMA', 2, 'POINT')}">₹850,000.00</strong>
+                                </td>
+                            </tr>
+                            
+                            <!-- Transaction Rows -->
+                            <tr th:each="txn : ${transactions}">
+                                <td th:text="${#temporals.format(txn.date, 'dd MMM yyyy')}">01 Jan 2024</td>
+                                <td>
+                                    <strong th:text="${txn.voucherNumber}">BNK-RCT-001</strong>
+                                </td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${txn.voucherType == 'RECEIPT' ? 'bg-success' : 'bg-danger'}"
+                                          th:text="${txn.voucherType}">RECEIPT</span>
+                                </td>
+                                <td>
+                                    <span th:text="${txn.particulars}">Bank transfer received</span>
+                                    <div th:if="${txn.description != null}">
+                                        <small class="text-muted" th:text="${txn.description}">Additional notes</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span th:if="${txn.referenceNumber != null}" 
+                                          class="badge bg-light text-dark"
+                                          th:text="${txn.referenceNumber}">CHQ-12345</span>
+                                </td>
+                                <td class="text-end">
+                                    <span th:if="${txn.debit != null && txn.debit.compareTo(T(java.math.BigDecimal).ZERO) > 0}"
+                                          class="text-success fw-bold"
+                                          th:text="'₹' + ${#numbers.formatDecimal(txn.debit, 0, 'COMMA', 2, 'POINT')}">₹150,000.00</span>
+                                </td>
+                                <td class="text-end">
+                                    <span th:if="${txn.credit != null && txn.credit.compareTo(T(java.math.BigDecimal).ZERO) > 0}"
+                                          class="text-danger fw-bold"
+                                          th:text="'₹' + ${#numbers.formatDecimal(txn.credit, 0, 'COMMA', 2, 'POINT')}">₹75,000.00</span>
+                                </td>
+                                <td class="text-end">
+                                    <strong th:text="'₹' + ${#numbers.formatDecimal(txn.runningBalance, 0, 'COMMA', 2, 'POINT')}">₹925,000.00</strong>
+                                </td>
+                            </tr>
+                            
+                            <!-- Total Row -->
+                            <tr class="table-active fw-bold">
+                                <td colspan="5" class="text-end" th:text="#{banking.total}">Total:</td>
+                                <td class="text-end text-success" th:text="'₹' + ${#numbers.formatDecimal(totalReceipts, 0, 'COMMA', 2, 'POINT')}">₹1,200,000.00</td>
+                                <td class="text-end text-danger" th:text="'₹' + ${#numbers.formatDecimal(totalPayments, 0, 'COMMA', 2, 'POINT')}">₹980,000.00</td>
+                                <td class="text-end"></td>
+                            </tr>
+                            
+                            <!-- Closing Balance Row -->
+                            <tr class="table-primary fw-bold">
+                                <td colspan="5" th:text="#{banking.closing.balance}">Closing Balance</td>
+                                <td class="text-end"></td>
+                                <td class="text-end"></td>
+                                <td class="text-end" th:text="'₹' + ${#numbers.formatDecimal(closingBalance, 0, 'COMMA', 2, 'POINT')}">₹1,070,000.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function filterByDate() {
+                const fromDate = document.getElementById('fromDate').value;
+                const toDate = document.getElementById('toDate').value;
+                window.location.href = `/banking/bank-book?fromDate=${fromDate}&toDate=${toDate}`;
+            }
+
+            function printBankBook() {
+                window.print();
+            }
+
+            function exportBankBook() {
+                const fromDate = document.getElementById('fromDate').value;
+                const toDate = document.getElementById('toDate').value;
+                window.location.href = `/banking/bank-book/export?fromDate=${fromDate}&toDate=${toDate}`;
+            }
+        </script>
+    </div>
+</body>
+</html>
