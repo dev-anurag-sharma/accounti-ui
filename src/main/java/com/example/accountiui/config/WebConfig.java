@@ -53,7 +53,7 @@ public class WebConfig implements WebMvcConfigurer {
         );
         messageSource.setDefaultEncoding("UTF-8");
         messageSource.setFallbackToSystemLocale(false);
-        messageSource.setCacheSeconds(3600);
+        messageSource.setCacheSeconds(0); // Disable caching for development
         return messageSource;
     }
 }
