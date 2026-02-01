@@ -1,6 +1,7 @@
 package com.example.accountiui.controller;
 
 import com.example.accountiui.dto.InventoryDto;
+import com.example.accountiui.dto.StockSummaryDto;
 import com.example.accountiui.dto.TransactionDto;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +20,12 @@ public class InventoryController {
 
     @GetMapping("/list")
     public String list(Model model) {
-        model.addAttribute("products", createDummyInventory());
+        List<InventoryDto> products = createDummyInventory();
+        model.addAttribute("products", products);
+        model.addAttribute("categories", products.stream()
+            .map(InventoryDto::getCategory)
+            .distinct()
+            .toList());
         return "inventory/inventory-list";
     }
 
@@ -30,8 +36,24 @@ public class InventoryController {
             .findFirst()
             .orElse(createDummyInventory().get(0));
         
+        List<TransactionDto> ledger = createStockLedger(product);
+        BigDecimal totalIn = ledger.stream()
+            .filter(t -> t.getDebit() != null)
+            .map(TransactionDto::getDebit)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalOut = ledger.stream()
+            .filter(t -> t.getCredit() != null)
+            .map(TransactionDto::getCredit)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        
+        StockSummaryDto stockSummary = StockSummaryDto.builder()
+            .totalIn(totalIn)
+            .totalOut(totalOut)
+            .build();
+        
         model.addAttribute("product", product);
-        model.addAttribute("stockLedger", createStockLedger(product));
+        model.addAttribute("stockLedger", ledger);
+        model.addAttribute("stockSummary", stockSummary);
         return "inventory/inventory-detail";
     }
 

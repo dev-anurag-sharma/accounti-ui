@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <div th:replace="~{fragments/layout :: head(#{inventory.products})}"></div>
+</head>
+<body th:replace="~{fragments/layout :: layout(#{inventory.products}, ~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 th:text="#{inventory.products}">Inventory</h2>
+                <p class="text-muted" th:text="#{inventory.list.description}">Manage your products and stock levels</p>
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="location.href='/inventory/create'">
+                    <i class="bi bi-plus-circle"></i> <span th:text="#{inventory.add.product}">Add Product</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter and Search Bar -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" th:placeholder="#{inventory.search}" placeholder="Search products...">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" id="categoryFilter">
+                            <option value="" th:text="#{inventory.all.categories}">All Categories</option>
+                            <option th:each="category : ${categories}" 
+                                    th:value="${category}" 
+                                    th:text="${category}">Electronics</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-primary w-100">
+                            <i class="bi bi-filter"></i> <span th:text="#{common.filter}">Filter</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="row g-4">
+            <div class="col-md-4" th:each="product : ${products}">
+                <div class="card h-100 border-0 shadow-sm product-card" 
+                     style="cursor: pointer;"
+                     th:onclick="'location.href=\'/inventory/detail/' + ${product.id} + '\''">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 class="card-title mb-1" th:text="${product.productName}">Product Name</h5>
+                                <p class="text-muted small mb-0" th:text="${product.productCode}">PRD-001</p>
+                            </div>
+                            <span class="badge bg-light text-dark" th:text="${product.category}">Category</span>
+                        </div>
+                        
+                        <!-- Stock Status -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted" th:text="#{inventory.current.stock}">Current Stock</small>
+                                <strong th:text="${product.currentStock} + ' ' + ${product.unit}">150 Pcs</strong>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar" 
+                                     th:classappend="${product.currentStock < product.reorderLevel ? 'bg-danger' : 'bg-success'}"
+                                     th:style="'width: ' + ${product.currentStock >= product.reorderLevel ? 
+                                               (product.currentStock * 100.0 / (product.reorderLevel * 2)) : 
+                                               (product.currentStock * 100.0 / product.reorderLevel)} + '%'"
+                                     role="progressbar"></div>
+                            </div>
+                        </div>
+
+                        <!-- Low Stock Warning -->
+                        <div th:if="${product.currentStock < product.reorderLevel}" 
+                             class="alert alert-danger py-2 px-3 mb-3">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <small><strong th:text="#{inventory.low.stock}">Low Stock!</strong></small>
+                        </div>
+
+                        <!-- Product Details -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <small class="text-muted d-block" th:text="#{inventory.reorder.level}">Reorder Level</small>
+                                <strong th:text="${product.reorderLevel} + ' ' + ${product.unit}">50 Pcs</strong>
+                            </div>
+                            <div class="col-6 text-end">
+                                <small class="text-muted d-block" th:text="#{inventory.stock.value}">Stock Value</small>
+                                <strong class="text-primary" 
+                                        th:text="'₹' + ${#numbers.formatDecimal(product.stockValue, 0, 'COMMA', 2, 'POINT')}">₹25,000.00</strong>
+                            </div>
+                        </div>
+
+                        <!-- Rates -->
+                        <div class="border-top pt-3">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <small class="text-muted" th:text="#{inventory.purchase.rate}">Purchase</small>
+                                    <div class="fw-bold" th:text="'₹' + ${#numbers.formatDecimal(product.purchaseRate, 0, 'COMMA', 2, 'POINT')}">₹150.00</div>
+                                </div>
+                                <div class="text-end">
+                                    <small class="text-muted" th:text="#{inventory.selling.rate}">Selling</small>
+                                    <div class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(product.sellingRate, 0, 'COMMA', 2, 'POINT')}">₹200.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(products)}" class="text-center py-5">
+            <i class="bi bi-box-seam text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3 text-muted" th:text="#{inventory.no.products}">No products found</h4>
+            <p class="text-muted" th:text="#{inventory.add.first.product}">Add your first product to get started</p>
+            <button class="btn btn-primary mt-3" onclick="location.href='/inventory/create'">
+                <i class="bi bi-plus-circle"></i> <span th:text="#{inventory.add.product}">Add Product</span>
+            </button>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4" th:if="${!#lists.isEmpty(products)}">
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <style>
+            .product-card {
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            .product-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+            }
+        </style>
+    </div>
+</body>
+</html>
