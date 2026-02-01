@@ -60,14 +60,14 @@
                         <tbody>
                             <tr th:each="customer : ${customers}">
                                 <td>
-                                    <strong th:text="${customer.partyName}">ABC Enterprises</strong>
+                                    <strong th:text="${customer.name}">ABC Enterprises</strong>
                                     <div class="d-md-none">
                                         <small class="text-muted" th:text="${customer.contactPerson}">John Doe</small><br/>
-                                        <small class="text-muted" th:text="${customer.phoneNumber}">+91 98765 43210</small>
+                                        <small class="text-muted" th:text="${customer.phone}">+91 98765 43210</small>
                                     </div>
                                 </td>
                                 <td class="d-none d-md-table-cell" th:text="${customer.contactPerson}">John Doe</td>
-                                <td class="d-none d-lg-table-cell" th:text="${customer.phoneNumber}">+91 98765 43210</td>
+                                <td class="d-none d-lg-table-cell" th:text="${customer.phone}">+91 98765 43210</td>
                                 <td class="d-none d-md-table-cell" th:text="${customer.email}">john@abc.com</td>
                                 <td class="d-none d-lg-table-cell" th:text="${customer.gstin}">27AABCU9603R1ZM</td>
                                 <td class="d-none d-lg-table-cell" th:text="${customer.city}">Mumbai</td>

@@ -60,14 +60,14 @@
                         <tbody>
                             <tr th:each="supplier : ${suppliers}">
                                 <td>
-                                    <strong th:text="${supplier.partyName}">XYZ Supplies Ltd</strong>
+                                    <strong th:text="${supplier.name}">XYZ Supplies Ltd</strong>
                                     <div class="d-md-none">
                                         <small class="text-muted" th:text="${supplier.contactPerson}">Jane Smith</small><br/>
-                                        <small class="text-muted" th:text="${supplier.phoneNumber}">+91 98765 12345</small>
+                                        <small class="text-muted" th:text="${supplier.phone}">+91 98765 12345</small>
                                     </div>
                                 </td>
                                 <td class="d-none d-md-table-cell" th:text="${supplier.contactPerson}">Jane Smith</td>
-                                <td class="d-none d-lg-table-cell" th:text="${supplier.phoneNumber}">+91 98765 12345</td>
+                                <td class="d-none d-lg-table-cell" th:text="${supplier.phone}">+91 98765 12345</td>
                                 <td class="d-none d-md-table-cell" th:text="${supplier.email}">jane@xyz.com</td>
                                 <td class="d-none d-lg-table-cell" th:text="${supplier.gstin}">27AADCS5432R1ZP</td>
                                 <td class="d-none d-lg-table-cell" th:text="${supplier.city}">Delhi</td>
