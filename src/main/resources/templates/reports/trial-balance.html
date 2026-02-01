@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(#{reports.trialBalance})}"></head>
+
+<body th:replace="~{fragments/layout :: layout(#{reports.trialBalance}, ~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">
+                <i class="bi bi-file-earmark-spreadsheet me-2"></i>
+                <span th:text="#{reports.trialBalance}">Trial Balance</span>
+            </h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group me-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.print()">
+                        <i class="bi bi-printer me-1"></i>
+                        <span th:text="#{common.print}">Print</span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="exportBtn">
+                        <i class="bi bi-download me-1"></i>
+                        <span th:text="#{common.export}">Export</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form id="filterForm" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="asOnDate" class="form-label" th:text="#{reports.asOnDate}">As on Date</label>
+                        <input type="date" class="form-control" id="asOnDate" name="asOnDate" 
+                               th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-funnel me-1"></i>
+                            <span th:text="#{common.filter}">Filter</span>
+                        </button>
+                        <button type="reset" class="btn btn-outline-secondary ms-2">
+                            <i class="bi bi-x-circle me-1"></i>
+                            <span th:text="#{common.reset}">Reset</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Report Section -->
+        <div class="card">
+            <div class="card-body">
+                <!-- Report Header -->
+                <div class="text-center mb-4 d-print-block">
+                    <h3 class="mb-1" th:text="#{reports.trialBalance}">Trial Balance</h3>
+                    <p class="text-muted mb-0">
+                        <span th:text="#{reports.asOnDate}">As on Date</span>: 
+                        <span id="reportDate" th:text="${#temporals.format(#temporals.createNow(), 'dd-MM-yyyy')}"></span>
+                    </p>
+                </div>
+
+                <!-- Trial Balance Table -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle" id="trialBalanceTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th th:text="#{reports.accountName}">Account Name</th>
+                                <th class="text-end" th:text="#{reports.debit}">Debit</th>
+                                <th class="text-end" th:text="#{reports.credit}">Credit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${trialBalanceData == null or #lists.isEmpty(trialBalanceData)}">
+                                <td colspan="3" class="text-center text-muted py-4">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                    <span th:text="#{reports.noDataAvailable}">No data available</span>
+                                </td>
+                            </tr>
+                            <tr th:each="account : ${trialBalanceData}">
+                                <td th:text="${account.accountName}">Cash Account</td>
+                                <td class="text-end" th:text="${#numbers.formatDecimal(account.debit, 1, 2)}">0.00</td>
+                                <td class="text-end" th:text="${#numbers.formatDecimal(account.credit, 1, 2)}">0.00</td>
+                            </tr>
+                        </tbody>
+                        <tfoot class="table-dark fw-bold">
+                            <tr>
+                                <td th:text="#{reports.total}">Total</td>
+                                <td class="text-end" id="totalDebit" th:text="${#numbers.formatDecimal(totalDebit ?: 0, 1, 2)}">0.00</td>
+                                <td class="text-end" id="totalCredit" th:text="${#numbers.formatDecimal(totalCredit ?: 0, 1, 2)}">0.00</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Balance Check -->
+                <div th:if="${totalDebit != null and totalCredit != null}" 
+                     class="alert mt-3" 
+                     th:classappend="${totalDebit == totalCredit} ? 'alert-success' : 'alert-danger'">
+                    <i class="bi" th:classappend="${totalDebit == totalCredit} ? 'bi-check-circle' : 'bi-exclamation-triangle'"></i>
+                    <span th:if="${totalDebit == totalCredit}" th:text="#{reports.balanceMatches}">Trial Balance is balanced</span>
+                    <span th:unless="${totalDebit == totalCredit}" th:text="#{reports.balanceNotMatches}">Trial Balance is not balanced</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Styles -->
+    <style>
+        @media print {
+            .btn-toolbar, .card:first-child, .border-bottom {
+                display: none !important;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none !important;
+            }
+        }
+    </style>
+
+    <!-- Custom Scripts -->
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterForm = document.getElementById('filterForm');
+            const exportBtn = document.getElementById('exportBtn');
+
+            filterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const asOnDate = document.getElementById('asOnDate').value;
+                window.location.href = '/reports/trial-balance?asOnDate=' + asOnDate;
+            });
+
+            exportBtn.addEventListener('click', function() {
+                const asOnDate = document.getElementById('asOnDate').value;
+                window.location.href = '/reports/trial-balance/export?asOnDate=' + asOnDate;
+            });
+        });
+    </script>
+</body>
+</html>

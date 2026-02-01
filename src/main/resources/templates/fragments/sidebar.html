@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <!-- Dashboard -->
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/dashboard}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span th:text="#{menu.dashboard}">Dashboard</span>
+                </a>
+            </li>
+            
+            <!-- Accounting -->
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#accountingMenu">
+                    <i class="bi bi-book"></i>
+                    <span th:text="#{menu.accounting}">Accounting</span>
+                    <i class="bi bi-chevron-down float-end"></i>
+                </a>
+                <div class="collapse" id="accountingMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/accounts/chart-of-accounts}">
+                                <i class="bi bi-diagram-3"></i> <span th:text="#{menu.chart.accounts}">Chart of Accounts</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/accounts/general-ledger}">
+                                <i class="bi bi-journal-text"></i> <span th:text="#{menu.general.ledger}">General Ledger</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            
+            <!-- Billing -->
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#billingMenu">
+                    <i class="bi bi-receipt"></i>
+                    <span th:text="#{menu.billing}">Billing</span>
+                    <i class="bi bi-chevron-down float-end"></i>
+                </a>
+                <div class="collapse" id="billingMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/invoice/list}">
+                                <i class="bi bi-list-ul"></i> <span th:text="#{menu.invoice.list}">Invoice List</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/invoice/create}">
+                                <i class="bi bi-plus-circle"></i> <span th:text="#{menu.invoice.create}">Create Invoice</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            
+            <!-- Purchase -->
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#purchaseMenu">
+                    <i class="bi bi-cart"></i>
+                    <span th:text="#{menu.purchase}">Purchase</span>
+                    <i class="bi bi-chevron-down float-end"></i>
+                </a>
+                <div class="collapse" id="purchaseMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/purchase/list}">
+                                <i class="bi bi-list-ul"></i> <span th:text="#{menu.purchase.list}">Purchase List</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/purchase/create}">
+                                <i class="bi bi-plus-circle"></i> <span th:text="#{menu.purchase.create}">Create Purchase</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            
+            <!-- Inventory -->
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/inventory/list}">
+                    <i class="bi bi-box-seam"></i>
+                    <span th:text="#{menu.inventory}">Inventory</span>
+                </a>
+            </li>
+            
+            <!-- Parties -->
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#partiesMenu">
+                    <i class="bi bi-people"></i>
+                    <span th:text="#{menu.parties}">Parties</span>
+                    <i class="bi bi-chevron-down float-end"></i>
+                </a>
+                <div class="collapse" id="partiesMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/parties/customers}">
+                                <i class="bi bi-person-check"></i> <span th:text="#{menu.customers}">Customers</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/parties/suppliers}">
+                                <i class="bi bi-truck"></i> <span th:text="#{menu.suppliers}">Suppliers</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            
+            <!-- Banking -->
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#bankingMenu">
+                    <i class="bi bi-bank"></i>
+                    <span th:text="#{menu.banking}">Banking</span>
+                    <i class="bi bi-chevron-down float-end"></i>
+                </a>
+                <div class="collapse" id="bankingMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/banking/cash-book}">
+                                <i class="bi bi-cash-stack"></i> <span th:text="#{menu.cash.book}">Cash Book</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/banking/bank-book}">
+                                <i class="bi bi-building"></i> <span th:text="#{menu.bank.book}">Bank Book</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            
+            <!-- Reports -->
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#reportsMenu">
+                    <i class="bi bi-graph-up"></i>
+                    <span th:text="#{menu.reports}">Reports</span>
+                    <i class="bi bi-chevron-down float-end"></i>
+                </a>
+                <div class="collapse" id="reportsMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/reports/trial-balance}">
+                                <i class="bi bi-clipboard-data"></i> <span th:text="#{menu.trial.balance}">Trial Balance</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/reports/profit-loss}">
+                                <i class="bi bi-graph-up-arrow"></i> <span th:text="#{menu.profit.loss}">Profit & Loss</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/reports/balance-sheet}">
+                                <i class="bi bi-file-earmark-spreadsheet"></i> <span th:text="#{menu.balance.sheet}">Balance Sheet</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            
+            <!-- Settings -->
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/settings}">
+                    <i class="bi bi-gear"></i>
+                    <span th:text="#{menu.settings}">Settings</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+</body>
+</html>

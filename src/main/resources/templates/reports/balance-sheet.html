@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(#{reports.balanceSheet})}"></head>
+
+<body th:replace="~{fragments/layout :: layout(#{reports.balanceSheet}, ~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">
+                <i class="bi bi-bank me-2"></i>
+                <span th:text="#{reports.balanceSheet}">Balance Sheet</span>
+            </h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group me-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.print()">
+                        <i class="bi bi-printer me-1"></i>
+                        <span th:text="#{common.print}">Print</span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="exportBtn">
+                        <i class="bi bi-download me-1"></i>
+                        <span th:text="#{common.export}">Export</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form id="filterForm" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="asOnDate" class="form-label" th:text="#{reports.asOnDate}">As on Date</label>
+                        <input type="date" class="form-control" id="asOnDate" name="asOnDate" 
+                               th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-funnel me-1"></i>
+                            <span th:text="#{common.filter}">Filter</span>
+                        </button>
+                        <button type="reset" class="btn btn-outline-secondary ms-2">
+                            <i class="bi bi-x-circle me-1"></i>
+                            <span th:text="#{common.reset}">Reset</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Report Section -->
+        <div class="card">
+            <div class="card-body">
+                <!-- Report Header -->
+                <div class="text-center mb-4 d-print-block">
+                    <h3 class="mb-1" th:text="#{reports.balanceSheet}">Balance Sheet</h3>
+                    <p class="text-muted mb-0">
+                        <span th:text="#{reports.asOnDate}">As on Date</span>: 
+                        <span id="reportDate" th:text="${#temporals.format(#temporals.createNow(), 'dd-MM-yyyy')}"></span>
+                    </p>
+                </div>
+
+                <!-- Two Column Layout -->
+                <div class="row">
+                    <!-- Assets Column -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-primary bg-opacity-10">
+                                <h5 class="mb-0 text-primary">
+                                    <i class="bi bi-box-seam me-2"></i>
+                                    <span th:text="#{reports.assets}">Assets</span>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Current Assets -->
+                                <div class="mb-4">
+                                    <h6 class="text-muted mb-3" th:text="#{reports.currentAssets}">Current Assets</h6>
+                                    <table class="table table-sm table-borderless ms-3">
+                                        <tbody>
+                                            <tr th:if="${currentAssets == null or #lists.isEmpty(currentAssets)}">
+                                                <td colspan="2" class="text-muted">
+                                                    <span th:text="#{reports.noDataAvailable}">No data available</span>
+                                                </td>
+                                            </tr>
+                                            <tr th:each="item : ${currentAssets}">
+                                                <td th:text="${item.accountName}">Cash</td>
+                                                <td class="text-end" th:text="${#numbers.formatDecimal(item.amount, 1, 2)}">0.00</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot class="border-top">
+                                            <tr class="fw-semibold">
+                                                <td th:text="#{reports.subtotal}">Subtotal</td>
+                                                <td class="text-end" th:text="${#numbers.formatDecimal(totalCurrentAssets ?: 0, 1, 2)}">0.00</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                                <!-- Fixed Assets -->
+                                <div class="mb-4">
+                                    <h6 class="text-muted mb-3" th:text="#{reports.fixedAssets}">Fixed Assets</h6>
+                                    <table class="table table-sm table-borderless ms-3">
+                                        <tbody>
+                                            <tr th:if="${fixedAssets == null or #lists.isEmpty(fixedAssets)}">
+                                                <td colspan="2" class="text-muted">
+                                                    <span th:text="#{reports.noDataAvailable}">No data available</span>
+                                                </td>
+                                            </tr>
+                                            <tr th:each="item : ${fixedAssets}">
+                                                <td th:text="${item.accountName}">Equipment</td>
+                                                <td class="text-end" th:text="${#numbers.formatDecimal(item.amount, 1, 2)}">0.00</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot class="border-top">
+                                            <tr class="fw-semibold">
+                                                <td th:text="#{reports.subtotal}">Subtotal</td>
+                                                <td class="text-end" th:text="${#numbers.formatDecimal(totalFixedAssets ?: 0, 1, 2)}">0.00</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                                <!-- Total Assets -->
+                                <div class="border-top pt-3">
+                                    <table class="table table-sm table-borderless mb-0">
+                                        <tfoot>
+                                            <tr class="fw-bold fs-5">
+                                                <td th:text="#{reports.totalAssets}">Total Assets</td>
+                                                <td class="text-end" id="totalAssets" th:text="${#numbers.formatDecimal(totalAssets ?: 0, 1, 2)}">0.00</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Liabilities & Equity Column -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-warning bg-opacity-10">
+                                <h5 class="mb-0 text-warning-emphasis">
+                                    <i class="bi bi-clipboard-data me-2"></i>
+                                    <span th:text="#{reports.liabilitiesEquity}">Liabilities & Equity</span>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <!-- Current Liabilities -->
+                                <div class="mb-4">
+                                    <h6 class="text-muted mb-3" th:text="#{reports.currentLiabilities}">Current Liabilities</h6>
+                                    <table class="table table-sm table-borderless ms-3">
+                                        <tbody>
+                                            <tr th:if="${currentLiabilities == null or #lists.isEmpty(currentLiabilities)}">
+                                                <td colspan="2" class="text-muted">
+                                                    <span th:text="#{reports.noDataAvailable}">No data available</span>
+                                                </td>
+                                            </tr>
+                                            <tr th:each="item : ${currentLiabilities}">
+                                                <td th:text="${item.accountName}">Accounts Payable</td>
+                                                <td class="text-end" th:text="${#numbers.formatDecimal(item.amount, 1, 2)}">0.00</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot class="border-top">
+                                            <tr class="fw-semibold">
+                                                <td th:text="#{reports.subtotal}">Subtotal</td>
+                                                <td class="text-end" th:text="${#numbers.formatDecimal(totalCurrentLiabilities ?: 0, 1, 2)}">0.00</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                                <!-- Long-term Liabilities -->
+                                <div class="mb-4">
+                                    <h6 class="text-muted mb-3" th:text="#{reports.longTermLiabilities}">Long-term Liabilities</h6>
+                                    <table class="table table-sm table-borderless ms-3">
+                                        <tbody>
+                                            <tr th:if="${longTermLiabilities == null or #lists.isEmpty(longTermLiabilities)}">
+                                                <td colspan="2" class="text-muted">
+                                                    <span th:text="#{reports.noDataAvailable}">No data available</span>
+                                                </td>
+                                            </tr>
+                                            <tr th:each="item : ${longTermLiabilities}">
+                                                <td th:text="${item.accountName}">Long-term Loan</td>
+                                                <td class="text-end" th:text="${#numbers.formatDecimal(item.amount, 1, 2)}">0.00</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot class="border-top">
+                                            <tr class="fw-semibold">
+                                                <td th:text="#{reports.subtotal}">Subtotal</td>
+                                                <td class="text-end" th:text="${#numbers.formatDecimal(totalLongTermLiabilities ?: 0, 1, 2)}">0.00</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                                <!-- Equity -->
+                                <div class="mb-4">
+                                    <h6 class="text-muted mb-3" th:text="#{reports.equity}">Equity</h6>
+                                    <table class="table table-sm table-borderless ms-3">
+                                        <tbody>
+                                            <tr th:if="${equity == null or #lists.isEmpty(equity)}">
+                                                <td colspan="2" class="text-muted">
+                                                    <span th:text="#{reports.noDataAvailable}">No data available</span>
+                                                </td>
+                                            </tr>
+                                            <tr th:each="item : ${equity}">
+                                                <td th:text="${item.accountName}">Owner's Capital</td>
+                                                <td class="text-end" th:text="${#numbers.formatDecimal(item.amount, 1, 2)}">0.00</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot class="border-top">
+                                            <tr class="fw-semibold">
+                                                <td th:text="#{reports.subtotal}">Subtotal</td>
+                                                <td class="text-end" th:text="${#numbers.formatDecimal(totalEquity ?: 0, 1, 2)}">0.00</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                                <!-- Total Liabilities & Equity -->
+                                <div class="border-top pt-3">
+                                    <table class="table table-sm table-borderless mb-0">
+                                        <tfoot>
+                                            <tr class="fw-bold fs-5">
+                                                <td th:text="#{reports.totalLiabilitiesEquity}">Total Liabilities & Equity</td>
+                                                <td class="text-end" id="totalLiabilitiesEquity" th:text="${#numbers.formatDecimal(totalLiabilitiesEquity ?: 0, 1, 2)}">0.00</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Balance Check -->
+                <div th:if="${totalAssets != null and totalLiabilitiesEquity != null}" 
+                     class="alert mt-3" 
+                     th:classappend="${totalAssets == totalLiabilitiesEquity} ? 'alert-success' : 'alert-danger'">
+                    <i class="bi" th:classappend="${totalAssets == totalLiabilitiesEquity} ? 'bi-check-circle' : 'bi-exclamation-triangle'"></i>
+                    <span th:if="${totalAssets == totalLiabilitiesEquity}" th:text="#{reports.balanceSheetBalanced}">Balance Sheet is balanced</span>
+                    <span th:unless="${totalAssets == totalLiabilitiesEquity}" th:text="#{reports.balanceSheetNotBalanced}">Balance Sheet is not balanced</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Styles -->
+    <style>
+        @media print {
+            .btn-toolbar, .card:first-child, .border-bottom {
+                display: none !important;
+            }
+            .card {
+                border: 1px solid #dee2e6 !important;
+                box-shadow: none !important;
+            }
+        }
+    </style>
+
+    <!-- Custom Scripts -->
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterForm = document.getElementById('filterForm');
+            const exportBtn = document.getElementById('exportBtn');
+
+            filterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const asOnDate = document.getElementById('asOnDate').value;
+                window.location.href = '/reports/balance-sheet?asOnDate=' + asOnDate;
+            });
+
+            exportBtn.addEventListener('click', function() {
+                const asOnDate = document.getElementById('asOnDate').value;
+                window.location.href = '/reports/balance-sheet/export?asOnDate=' + asOnDate;
+            });
+        });
+    </script>
+</body>
+</html>

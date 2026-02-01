@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <div th:replace="~{fragments/layout :: head(#{billing.invoice.view})}"></div>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .invoice-container { box-shadow: none !important; }
+        }
+    </style>
+</head>
+<body th:replace="~{fragments/layout :: layout(#{billing.invoice.view}, ~{::content})}">
+    <div th:fragment="content">
+        <!-- Action Buttons - Top -->
+        <div class="d-flex justify-content-between align-items-center mb-4 no-print">
+            <div>
+                <button class="btn btn-outline-secondary" onclick="location.href='/invoice/list'">
+                    <i class="bi bi-arrow-left"></i> <span th:text="#{billing.back.to.list}">Back to List</span>
+                </button>
+            </div>
+            <div>
+                <button class="btn btn-outline-primary me-2" onclick="window.print()">
+                    <i class="bi bi-printer"></i> <span th:text="#{billing.print}">Print</span>
+                </button>
+                <button class="btn btn-primary" onclick="downloadPDF()">
+                    <i class="bi bi-download"></i> <span th:text="#{billing.download.pdf}">Download PDF</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Invoice Container -->
+        <div class="card border-0 shadow-sm invoice-container">
+            <div class="card-body p-5">
+                <!-- Company Header -->
+                <div class="row mb-5">
+                    <div class="col-md-6">
+                        <h1 class="mb-3" th:text="${company.name}">Your Company Name</h1>
+                        <p class="mb-1" th:text="${company.address}">123 Business Street</p>
+                        <p class="mb-1" th:text="${company.city + ', ' + company.state + ' - ' + company.pincode}">Mumbai, Maharashtra - 400001</p>
+                        <p class="mb-1">
+                            <i class="bi bi-phone"></i> <span th:text="${company.phone}">+91 98765 43210</span>
+                        </p>
+                        <p class="mb-1">
+                            <i class="bi bi-envelope"></i> <span th:text="${company.email}">info@company.com</span>
+                        </p>
+                        <p class="mb-1">
+                            <strong th:text="#{billing.gstin}">GSTIN:</strong> <span th:text="${company.gstin}">27AABCU9603R1ZM</span>
+                        </p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <h2 class="text-primary mb-3" th:text="#{billing.invoice}">INVOICE</h2>
+                        <h4 class="mb-3">
+                            <span class="badge bg-primary" th:text="${invoice.number}">INV-2024-001</span>
+                        </h4>
+                        <p class="mb-1">
+                            <strong th:text="#{billing.date}">Date:</strong> 
+                            <span th:text="${#temporals.format(invoice.date, 'dd-MMM-yyyy')}">15-Jan-2024</span>
+                        </p>
+                        <p class="mb-3">
+                            <strong th:text="#{billing.due.date}">Due Date:</strong> 
+                            <span th:text="${#temporals.format(invoice.dueDate, 'dd-MMM-yyyy')}">30-Jan-2024</span>
+                        </p>
+                        <span class="badge fs-6" 
+                              th:classappend="${invoice.status == 'PAID' ? 'bg-success' : 
+                                               invoice.status == 'SENT' ? 'bg-info' : 
+                                               invoice.status == 'OVERDUE' ? 'bg-danger' : 'bg-secondary'}"
+                              th:text="${invoice.status}">PAID</span>
+                    </div>
+                </div>
+
+                <!-- Bill To -->
+                <div class="row mb-5">
+                    <div class="col-md-6">
+                        <h5 class="text-primary mb-3" th:text="#{billing.bill.to}">Bill To:</h5>
+                        <h5 th:text="${invoice.customerName}">Sharma Traders</h5>
+                        <p class="mb-1" th:text="${invoice.customerAddress}">456 Market Road</p>
+                        <p class="mb-1" th:text="${invoice.customerCity + ', ' + invoice.customerState + ' - ' + invoice.customerPincode}">Delhi, Delhi - 110001</p>
+                        <p class="mb-1" th:if="${invoice.customerPhone}">
+                            <i class="bi bi-phone"></i> <span th:text="${invoice.customerPhone}">+91 12345 67890</span>
+                        </p>
+                        <p class="mb-1" th:if="${invoice.customerEmail}">
+                            <i class="bi bi-envelope"></i> <span th:text="${invoice.customerEmail}">customer@email.com</span>
+                        </p>
+                        <p class="mb-1" th:if="${invoice.customerGstin}">
+                            <strong th:text="#{billing.gstin}">GSTIN:</strong> <span th:text="${invoice.customerGstin}">07AABCU9603R1ZM</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Items Table -->
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 5%">#</th>
+                                <th style="width: 40%" th:text="#{billing.item.description}">Item Description</th>
+                                <th style="width: 10%" class="text-center" th:text="#{billing.quantity}">Qty</th>
+                                <th style="width: 15%" class="text-end" th:text="#{billing.rate}">Rate</th>
+                                <th style="width: 10%" class="text-end" th:text="#{billing.gst}">GST %</th>
+                                <th style="width: 20%" class="text-end" th:text="#{billing.amount}">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item, iterStat : ${invoice.items}">
+                                <td th:text="${iterStat.count}">1</td>
+                                <td>
+                                    <strong th:text="${item.productName}">Product Name</strong>
+                                    <br>
+                                    <small class="text-muted" th:if="${item.description}" th:text="${item.description}">Product description</small>
+                                </td>
+                                <td class="text-center" th:text="${item.quantity}">5</td>
+                                <td class="text-end" th:text="'₹' + ${#numbers.formatDecimal(item.rate, 0, 'COMMA', 2, 'POINT')}">₹1,000.00</td>
+                                <td class="text-end" th:text="${item.gstRate + '%'}">18%</td>
+                                <td class="text-end" th:text="'₹' + ${#numbers.formatDecimal(item.totalAmount, 0, 'COMMA', 2, 'POINT')}">₹5,900.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Totals -->
+                <div class="row justify-content-end">
+                    <div class="col-md-5">
+                        <table class="table table-sm">
+                            <tr>
+                                <td class="border-0"><strong th:text="#{billing.subtotal}">Subtotal:</strong></td>
+                                <td class="border-0 text-end" th:text="'₹' + ${#numbers.formatDecimal(invoice.subtotal, 0, 'COMMA', 2, 'POINT')}">₹42,372.88</td>
+                            </tr>
+                            <tr th:if="${invoice.cgst > 0}">
+                                <td class="border-0" th:text="#{billing.cgst}">CGST:</td>
+                                <td class="border-0 text-end" th:text="'₹' + ${#numbers.formatDecimal(invoice.cgst, 0, 'COMMA', 2, 'POINT')}">₹3,813.56</td>
+                            </tr>
+                            <tr th:if="${invoice.sgst > 0}">
+                                <td class="border-0" th:text="#{billing.sgst}">SGST:</td>
+                                <td class="border-0 text-end" th:text="'₹' + ${#numbers.formatDecimal(invoice.sgst, 0, 'COMMA', 2, 'POINT')}">₹3,813.56</td>
+                            </tr>
+                            <tr th:if="${invoice.igst > 0}">
+                                <td class="border-0" th:text="#{billing.igst}">IGST:</td>
+                                <td class="border-0 text-end" th:text="'₹' + ${#numbers.formatDecimal(invoice.igst, 0, 'COMMA', 2, 'POINT')}">₹7,627.12</td>
+                            </tr>
+                            <tr class="table-primary">
+                                <td class="fw-bold"><h5 class="mb-0" th:text="#{billing.total}">Total:</h5></td>
+                                <td class="text-end"><h5 class="mb-0" th:text="'₹' + ${#numbers.formatDecimal(invoice.totalAmount, 0, 'COMMA', 2, 'POINT')}">₹50,000.00</h5></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Amount in Words -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <p class="mb-1">
+                            <strong th:text="#{billing.amount.in.words}">Amount in Words:</strong>
+                        </p>
+                        <p class="fst-italic" th:text="${invoice.amountInWords}">Fifty Thousand Rupees Only</p>
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="row mt-4" th:if="${invoice.notes}">
+                    <div class="col-12">
+                        <h6 th:text="#{billing.notes}">Notes:</h6>
+                        <p th:text="${invoice.notes}">Thank you for your business!</p>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="row mt-5 pt-4 border-top">
+                    <div class="col-md-6">
+                        <p class="text-muted small">
+                            <i class="bi bi-info-circle"></i> 
+                            <span th:text="#{billing.invoice.footer}">This is a computer-generated invoice and does not require a signature.</span>
+                        </p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <p class="mb-1"><strong th:text="#{billing.authorized.signatory}">Authorized Signatory</strong></p>
+                        <p class="text-muted small" th:text="${company.name}">Your Company Name</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function downloadPDF() {
+                // This would typically call a backend endpoint to generate PDF
+                window.location.href = '/invoice/download-pdf/' + [[${invoice.id}]];
+            }
+        </script>
+    </div>
+</body>
+</html>

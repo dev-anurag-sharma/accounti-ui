@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(#{reports.profitLoss})}"></head>
+
+<body th:replace="~{fragments/layout :: layout(#{reports.profitLoss}, ~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">
+                <i class="bi bi-graph-up-arrow me-2"></i>
+                <span th:text="#{reports.profitLoss}">Profit & Loss Statement</span>
+            </h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+                <div class="btn-group me-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.print()">
+                        <i class="bi bi-printer me-1"></i>
+                        <span th:text="#{common.print}">Print</span>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="exportBtn">
+                        <i class="bi bi-download me-1"></i>
+                        <span th:text="#{common.export}">Export</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form id="filterForm" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="fromDate" class="form-label" th:text="#{reports.fromDate}">From Date</label>
+                        <input type="date" class="form-control" id="fromDate" name="fromDate" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="toDate" class="form-label" th:text="#{reports.toDate}">To Date</label>
+                        <input type="date" class="form-control" id="toDate" name="toDate" 
+                               th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" required>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-funnel me-1"></i>
+                            <span th:text="#{common.filter}">Filter</span>
+                        </button>
+                        <button type="reset" class="btn btn-outline-secondary ms-2">
+                            <i class="bi bi-x-circle me-1"></i>
+                            <span th:text="#{common.reset}">Reset</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Report Section -->
+        <div class="card">
+            <div class="card-body">
+                <!-- Report Header -->
+                <div class="text-center mb-4 d-print-block">
+                    <h3 class="mb-1" th:text="#{reports.profitLoss}">Profit & Loss Statement</h3>
+                    <p class="text-muted mb-0">
+                        <span th:text="#{reports.period}">Period</span>: 
+                        <span id="reportPeriod"></span>
+                    </p>
+                </div>
+
+                <div class="row">
+                    <!-- Income Section -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-success bg-opacity-10">
+                                <h5 class="mb-0 text-success">
+                                    <i class="bi bi-arrow-down-circle me-2"></i>
+                                    <span th:text="#{reports.income}">Income</span>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm table-borderless">
+                                    <tbody>
+                                        <tr th:if="${incomeData == null or #lists.isEmpty(incomeData)}">
+                                            <td colspan="2" class="text-center text-muted py-3">
+                                                <span th:text="#{reports.noDataAvailable}">No data available</span>
+                                            </td>
+                                        </tr>
+                                        <tr th:each="item : ${incomeData}">
+                                            <td th:text="${item.accountName}">Sales Revenue</td>
+                                            <td class="text-end" th:text="${#numbers.formatDecimal(item.amount, 1, 2)}">0.00</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot class="border-top">
+                                        <tr class="fw-bold">
+                                            <td th:text="#{reports.totalIncome}">Total Income</td>
+                                            <td class="text-end" id="totalIncome" th:text="${#numbers.formatDecimal(totalIncome ?: 0, 1, 2)}">0.00</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Expenses Section -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header bg-danger bg-opacity-10">
+                                <h5 class="mb-0 text-danger">
+                                    <i class="bi bi-arrow-up-circle me-2"></i>
+                                    <span th:text="#{reports.expenses}">Expenses</span>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm table-borderless">
+                                    <tbody>
+                                        <tr th:if="${expenseData == null or #lists.isEmpty(expenseData)}">
+                                            <td colspan="2" class="text-center text-muted py-3">
+                                                <span th:text="#{reports.noDataAvailable}">No data available</span>
+                                            </td>
+                                        </tr>
+                                        <tr th:each="item : ${expenseData}">
+                                            <td th:text="${item.accountName}">Rent Expense</td>
+                                            <td class="text-end" th:text="${#numbers.formatDecimal(item.amount, 1, 2)}">0.00</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot class="border-top">
+                                        <tr class="fw-bold">
+                                            <td th:text="#{reports.totalExpenses}">Total Expenses</td>
+                                            <td class="text-end" id="totalExpenses" th:text="${#numbers.formatDecimal(totalExpenses ?: 0, 1, 2)}">0.00</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Net Profit/Loss -->
+                <div class="card" th:if="${netProfitLoss != null}">
+                    <div class="card-body text-center py-4" 
+                         th:classappend="${netProfitLoss >= 0} ? 'bg-success bg-opacity-10' : 'bg-danger bg-opacity-10'">
+                        <h4 class="mb-2" th:classappend="${netProfitLoss >= 0} ? 'text-success' : 'text-danger'">
+                            <i class="bi me-2" th:classappend="${netProfitLoss >= 0} ? 'bi-arrow-up-circle-fill' : 'bi-arrow-down-circle-fill'"></i>
+                            <span th:text="${netProfitLoss >= 0} ? #{reports.netProfit} : #{reports.netLoss}">Net Profit</span>
+                        </h4>
+                        <h2 class="mb-0 fw-bold" th:classappend="${netProfitLoss >= 0} ? 'text-success' : 'text-danger'">
+                            <span th:text="${#numbers.formatDecimal(#numbers.abs(netProfitLoss), 1, 2)}">0.00</span>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Styles -->
+    <style>
+        @media print {
+            .btn-toolbar, .card:first-child, .border-bottom {
+                display: none !important;
+            }
+            .card {
+                border: 1px solid #dee2e6 !important;
+                box-shadow: none !important;
+            }
+        }
+    </style>
+
+    <!-- Custom Scripts -->
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterForm = document.getElementById('filterForm');
+            const exportBtn = document.getElementById('exportBtn');
+            const fromDateInput = document.getElementById('fromDate');
+            const toDateInput = document.getElementById('toDate');
+
+            // Set default from date to first day of current month
+            const now = new Date();
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+            fromDateInput.value = firstDay.toISOString().split('T')[0];
+
+            filterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const fromDate = fromDateInput.value;
+                const toDate = toDateInput.value;
+                window.location.href = '/reports/profit-loss?fromDate=' + fromDate + '&toDate=' + toDate;
+            });
+
+            exportBtn.addEventListener('click', function() {
+                const fromDate = fromDateInput.value;
+                const toDate = toDateInput.value;
+                window.location.href = '/reports/profit-loss/export?fromDate=' + fromDate + '&toDate=' + toDate;
+            });
+
+            // Update report period display
+            if (fromDateInput.value && toDateInput.value) {
+                document.getElementById('reportPeriod').textContent = 
+                    formatDate(fromDateInput.value) + ' to ' + formatDate(toDateInput.value);
+            }
+
+            function formatDate(dateStr) {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('en-GB');
+            }
+        });
+    </script>
+</body>
+</html>

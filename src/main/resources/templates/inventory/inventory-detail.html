@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <div th:replace="~{fragments/layout :: head(#{inventory.product.details})}"></div>
+</head>
+<body th:replace="~{fragments/layout :: layout(#{inventory.product.details}, ~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 th:text="${product.productName}">Product Name</h2>
+                <p class="text-muted mb-0">
+                    <span th:text="${product.productCode}">PRD-001</span>
+                    <span class="mx-2">•</span>
+                    <span class="badge bg-light text-dark" th:text="${product.category}">Category</span>
+                    <span th:if="${product.currentStock < product.reorderLevel}" 
+                          class="badge bg-danger ms-2">
+                        <i class="bi bi-exclamation-triangle-fill"></i> 
+                        <span th:text="#{inventory.low.stock}">Low Stock</span>
+                    </span>
+                </p>
+            </div>
+            <div>
+                <a href="/inventory/list" class="btn btn-outline-secondary me-2">
+                    <i class="bi bi-arrow-left"></i> <span th:text="#{common.back}">Back</span>
+                </a>
+                <button class="btn btn-primary" th:onclick="'location.href=\'/inventory/edit/' + ${product.id} + '\''">
+                    <i class="bi bi-pencil"></i> <span th:text="#{common.edit}">Edit</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Product Details Card -->
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">
+                            <i class="bi bi-info-circle text-primary"></i>
+                            <span th:text="#{inventory.product.details}">Product Details</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="text-muted small" th:text="#{inventory.product.name}">Product Name</label>
+                                <div class="fw-bold" th:text="${product.productName}">Premium Widget</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small" th:text="#{inventory.product.code}">Product Code</label>
+                                <div class="fw-bold" th:text="${product.productCode}">PRD-001</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small" th:text="#{inventory.category}">Category</label>
+                                <div class="fw-bold" th:text="${product.category}">Electronics</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small" th:text="#{inventory.hsn.code}">HSN Code</label>
+                                <div class="fw-bold" th:text="${product.hsnCode}">8471</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small" th:text="#{inventory.unit}">Unit</label>
+                                <div class="fw-bold" th:text="${product.unit}">Pcs</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small" th:text="#{inventory.gst.rate}">GST Rate</label>
+                                <div class="fw-bold" th:text="${product.gstRate} + '%'">18%</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small" th:text="#{inventory.purchase.rate}">Purchase Rate</label>
+                                <div class="fw-bold text-primary" 
+                                     th:text="'₹' + ${#numbers.formatDecimal(product.purchaseRate, 0, 'COMMA', 2, 'POINT')}">₹150.00</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small" th:text="#{inventory.selling.rate}">Selling Rate</label>
+                                <div class="fw-bold text-success" 
+                                     th:text="'₹' + ${#numbers.formatDecimal(product.sellingRate, 0, 'COMMA', 2, 'POINT')}">₹200.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock Summary Card -->
+            <div class="col-lg-6 mb-4">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">
+                            <i class="bi bi-box-seam text-primary"></i>
+                            <span th:text="#{inventory.stock.summary}">Stock Summary</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="text-muted small" th:text="#{inventory.opening.stock}">Opening Stock</label>
+                                <div class="fw-bold" th:text="${product.openingStock} + ' ' + ${product.unit}">200 Pcs</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small" th:text="#{inventory.current.stock}">Current Stock</label>
+                                <div class="fw-bold" 
+                                     th:classappend="${product.currentStock < product.reorderLevel ? 'text-danger' : 'text-success'}"
+                                     th:text="${product.currentStock} + ' ' + ${product.unit}">150 Pcs</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small" th:text="#{inventory.reorder.level}">Reorder Level</label>
+                                <div class="fw-bold" th:text="${product.reorderLevel} + ' ' + ${product.unit}">50 Pcs</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="text-muted small" th:text="#{inventory.stock.value}">Stock Value</label>
+                                <div class="fw-bold text-primary" 
+                                     th:text="'₹' + ${#numbers.formatDecimal(product.stockValue, 0, 'COMMA', 2, 'POINT')}">₹22,500.00</div>
+                            </div>
+                        </div>
+
+                        <!-- Stock Progress Bar -->
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted" th:text="#{inventory.stock.level}">Stock Level</small>
+                                <small th:classappend="${product.currentStock < product.reorderLevel ? 'text-danger fw-bold' : 'text-muted'}"
+                                       th:text="${product.currentStock < product.reorderLevel ? '⚠ ' + #{inventory.reorder.required} : #{inventory.stock.healthy}}">
+                                    Stock Healthy
+                                </small>
+                            </div>
+                            <div class="progress" style="height: 12px;">
+                                <div class="progress-bar" 
+                                     th:classappend="${product.currentStock < product.reorderLevel ? 'bg-danger' : 'bg-success'}"
+                                     th:style="'width: ' + ${product.currentStock >= product.reorderLevel ? 
+                                               (product.currentStock * 100.0 / (product.reorderLevel * 2)) : 
+                                               (product.currentStock * 100.0 / product.reorderLevel)} + '%'"
+                                     role="progressbar">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Stats -->
+                        <div class="row g-2 mt-4">
+                            <div class="col-6">
+                                <div class="bg-light rounded p-3 text-center">
+                                    <div class="text-muted small" th:text="#{inventory.total.in}">Total In</div>
+                                    <div class="h5 mb-0 text-success" th:text="${stockSummary.totalIn} + ' ' + ${product.unit}">250 Pcs</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-light rounded p-3 text-center">
+                                    <div class="text-muted small" th:text="#{inventory.total.out}">Total Out</div>
+                                    <div class="h5 mb-0 text-danger" th:text="${stockSummary.totalOut} + ' ' + ${product.unit}">100 Pcs</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Ledger -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-journal-text text-primary"></i>
+                    <span th:text="#{inventory.stock.ledger}">Stock Ledger</span>
+                </h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-primary me-2">
+                        <i class="bi bi-printer"></i> <span th:text="#{common.print}">Print</span>
+                    </button>
+                    <button class="btn btn-sm btn-outline-success">
+                        <i class="bi bi-file-excel"></i> <span th:text="#{common.export}">Export</span>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th th:text="#{common.date}">Date</th>
+                                <th th:text="#{inventory.voucher}">Voucher</th>
+                                <th th:text="#{inventory.particulars}">Particulars</th>
+                                <th class="text-end" th:text="#{inventory.in}">In (Debit)</th>
+                                <th class="text-end" th:text="#{inventory.out}">Out (Credit)</th>
+                                <th class="text-end" th:text="#{inventory.balance}">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Opening Balance -->
+                            <tr class="table-secondary">
+                                <td colspan="3"><strong th:text="#{inventory.opening.balance}">Opening Balance</strong></td>
+                                <td class="text-end">-</td>
+                                <td class="text-end">-</td>
+                                <td class="text-end">
+                                    <strong th:text="${product.openingStock} + ' ' + ${product.unit}">200 Pcs</strong>
+                                </td>
+                            </tr>
+
+                            <!-- Stock Transactions -->
+                            <tr th:each="txn : ${stockLedger}">
+                                <td th:text="${#temporals.format(txn.date, 'dd MMM yyyy')}">15 Jan 2024</td>
+                                <td>
+                                    <strong th:text="${txn.voucherNumber}">PUR-001</strong><br>
+                                    <small class="text-muted" th:text="${txn.voucherType}">PURCHASE</small>
+                                </td>
+                                <td>
+                                    <span th:text="${txn.particulars}">Purchase from ABC Suppliers</span>
+                                    <div th:if="${txn.referenceNumber != null}">
+                                        <small class="text-muted" th:text="'Ref: ' + ${txn.referenceNumber}">Ref: INV-123</small>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <span th:if="${txn.debit != null && txn.debit.compareTo(T(java.math.BigDecimal).ZERO) > 0}"
+                                          class="text-success fw-bold"
+                                          th:text="${txn.debit} + ' ' + ${product.unit}">50 Pcs</span>
+                                </td>
+                                <td class="text-end">
+                                    <span th:if="${txn.credit != null && txn.credit.compareTo(T(java.math.BigDecimal).ZERO) > 0}"
+                                          class="text-danger fw-bold"
+                                          th:text="${txn.credit} + ' ' + ${product.unit}">25 Pcs</span>
+                                </td>
+                                <td class="text-end">
+                                    <strong th:text="${txn.runningBalance} + ' ' + ${product.unit}">225 Pcs</strong>
+                                </td>
+                            </tr>
+
+                            <!-- Empty State -->
+                            <tr th:if="${#lists.isEmpty(stockLedger)}">
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                                    <p class="mt-2 mb-0" th:text="#{inventory.no.transactions}">No stock transactions found</p>
+                                </td>
+                            </tr>
+
+                            <!-- Closing Balance -->
+                            <tr class="table-secondary" th:if="${!#lists.isEmpty(stockLedger)}">
+                                <td colspan="3"><strong th:text="#{inventory.closing.balance}">Closing Balance</strong></td>
+                                <td class="text-end">
+                                    <strong class="text-success" th:text="${stockSummary.totalIn} + ' ' + ${product.unit}">250 Pcs</strong>
+                                </td>
+                                <td class="text-end">
+                                    <strong class="text-danger" th:text="${stockSummary.totalOut} + ' ' + ${product.unit}">100 Pcs</strong>
+                                </td>
+                                <td class="text-end">
+                                    <strong th:text="${product.currentStock} + ' ' + ${product.unit}"
+                                            th:classappend="${product.currentStock < product.reorderLevel ? 'text-danger' : 'text-success'}">150 Pcs</strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

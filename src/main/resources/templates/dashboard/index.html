@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <div th:replace="~{fragments/layout :: head(#{dashboard.title})}"></div>
+</head>
+<body th:replace="~{fragments/layout :: layout(#{dashboard.title}, ~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 th:text="#{dashboard.title}">Dashboard</h2>
+                <p class="text-muted" th:text="#{dashboard.overview}">Financial Overview</p>
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="location.href='/invoice/create'">
+                    <i class="bi bi-plus-circle"></i> <span th:text="#{dashboard.create.invoice}">Create Invoice</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Financial Stats Cards -->
+        <div class="row g-3 mb-4">
+            <!-- Cash Balance -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card stat-card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-cash-stack text-success" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="text-muted mb-1" th:text="#{dashboard.cash.balance}">Cash Balance</h6>
+                                <div class="display-6 text-success" th:text="'₹' + ${#numbers.formatDecimal(stats.cashBalance, 0, 'COMMA', 2, 'POINT')}">₹125,000.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bank Balance -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card stat-card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-bank text-primary" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="text-muted mb-1" th:text="#{dashboard.bank.balance}">Bank Balance</h6>
+                                <div class="display-6 text-primary" th:text="'₹' + ${#numbers.formatDecimal(stats.bankBalance, 0, 'COMMA', 2, 'POINT')}">₹456,780.50</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Sales -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card stat-card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-graph-up-arrow text-info" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="text-muted mb-1" th:text="#{dashboard.today.sales}">Today's Sales</h6>
+                                <div class="display-6 text-info" th:text="'₹' + ${#numbers.formatDecimal(stats.todaySales, 0, 'COMMA', 2, 'POINT')}">₹18,500.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Receivables -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card stat-card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-arrow-down-circle text-warning" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="text-muted mb-1" th:text="#{dashboard.receivables}">Outstanding Receivables</h6>
+                                <div class="display-6 text-warning" th:text="'₹' + ${#numbers.formatDecimal(stats.receivables, 0, 'COMMA', 2, 'POINT')}">₹234,560.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payables -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card stat-card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-arrow-up-circle text-danger" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="text-muted mb-1" th:text="#{dashboard.payables}">Outstanding Payables</h6>
+                                <div class="display-6 text-danger" th:text="'₹' + ${#numbers.formatDecimal(stats.payables, 0, 'COMMA', 2, 'POINT')}">₹123,450.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profit/Loss -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card stat-card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i class="bi bi-trophy text-success" style="font-size: 2.5rem;"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="text-muted mb-1" th:text="#{dashboard.profit.loss}">Profit/Loss This Month</h6>
+                                <div class="display-6 text-success" th:text="'₹' + ${#numbers.formatDecimal(stats.profitLoss, 0, 'COMMA', 2, 'POINT')}">₹45,000.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title mb-3" th:text="#{dashboard.quick.actions}">Quick Actions</h5>
+                <div class="row g-2">
+                    <div class="col-6 col-md-3">
+                        <a href="/invoice/create" class="btn btn-outline-primary w-100 py-3">
+                            <i class="bi bi-file-earmark-plus d-block mb-2" style="font-size: 2rem;"></i>
+                            <span th:text="#{dashboard.create.invoice}">Create Invoice</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="/purchase/create" class="btn btn-outline-secondary w-100 py-3">
+                            <i class="bi bi-cart-plus d-block mb-2" style="font-size: 2rem;"></i>
+                            <span th:text="#{dashboard.add.purchase}">Add Purchase</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="/banking/cash-book" class="btn btn-outline-success w-100 py-3">
+                            <i class="bi bi-cash-coin d-block mb-2" style="font-size: 2rem;"></i>
+                            <span th:text="#{dashboard.add.payment}">Add Payment</span>
+                        </a>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="/inventory/list" class="btn btn-outline-info w-100 py-3">
+                            <i class="bi bi-box-seam d-block mb-2" style="font-size: 2rem;"></i>
+                            <span th:text="#{menu.inventory}">Inventory</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="row g-4">
+            <!-- Recent Invoices -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0" th:text="#{dashboard.recent.invoices}">Recent Invoices</h5>
+                            <a href="/invoice/list" class="btn btn-sm btn-outline-primary">
+                                <span th:text="#{common.view}">View</span> <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Number</th>
+                                        <th>Customer</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="invoice : ${recentInvoices}">
+                                        <td><strong th:text="${invoice.number}">INV-001</strong></td>
+                                        <td th:text="${invoice.customer}">Sharma Traders</td>
+                                        <td><strong th:text="'₹' + ${#numbers.formatDecimal(invoice.amount, 0, 'COMMA', 2, 'POINT')}">₹15,000.00</strong></td>
+                                        <td>
+                                            <span class="badge" 
+                                                  th:classappend="${invoice.status == 'PAID' ? 'bg-success' : 
+                                                                   invoice.status == 'SENT' ? 'bg-info' : 
+                                                                   invoice.status == 'OVERDUE' ? 'bg-danger' : 'bg-secondary'}"
+                                                  th:text="${invoice.status}">PAID</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Purchases -->
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0" th:text="#{dashboard.recent.purchases}">Recent Purchases</h5>
+                            <a href="/purchase/list" class="btn btn-sm btn-outline-primary">
+                                <span th:text="#{common.view}">View</span> <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Number</th>
+                                        <th>Supplier</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="purchase : ${recentPurchases}">
+                                        <td><strong th:text="${purchase.number}">PUR-001</strong></td>
+                                        <td th:text="${purchase.supplier}">ABC Suppliers</td>
+                                        <td><strong th:text="'₹' + ${#numbers.formatDecimal(purchase.amount, 0, 'COMMA', 2, 'POINT')}">₹45,000.00</strong></td>
+                                        <td>
+                                            <span class="badge" 
+                                                  th:classappend="${purchase.status == 'PAID' ? 'bg-success' : 'bg-warning'}"
+                                                  th:text="${purchase.status}">PAID</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

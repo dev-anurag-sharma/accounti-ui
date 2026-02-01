@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <div th:replace="~{fragments/layout :: head(#{billing.invoices})}"></div>
+</head>
+<body th:replace="~{fragments/layout :: layout(#{billing.invoices}, ~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 th:text="#{billing.invoices}">Invoices</h2>
+                <p class="text-muted" th:text="#{billing.invoice.list.description}">Manage your invoices</p>
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="location.href='/invoice/create'">
+                    <i class="bi bi-plus-circle"></i> <span th:text="#{billing.create.invoice}">Create Invoice</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter and Search Bar -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" th:placeholder="#{billing.search.invoices}" placeholder="Search invoices...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option value="" th:text="#{billing.all.statuses}">All Statuses</option>
+                            <option value="PAID" th:text="#{billing.status.paid}">Paid</option>
+                            <option value="SENT" th:text="#{billing.status.sent}">Sent</option>
+                            <option value="OVERDUE" th:text="#{billing.status.overdue}">Overdue</option>
+                            <option value="DRAFT" th:text="#{billing.status.draft}">Draft</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control" th:placeholder="#{billing.from.date}">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-primary w-100">
+                            <i class="bi bi-filter"></i> <span th:text="#{billing.filter}">Filter</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoices Table -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th th:text="#{billing.invoice.no}">Invoice No</th>
+                                <th th:text="#{billing.date}">Date</th>
+                                <th th:text="#{billing.customer}">Customer</th>
+                                <th class="text-end" th:text="#{billing.amount}">Amount</th>
+                                <th th:text="#{billing.status}">Status</th>
+                                <th class="text-end" th:text="#{billing.actions}">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="invoice : ${invoices}">
+                                <td><strong th:text="${invoice.number}">INV-2024-001</strong></td>
+                                <td th:text="${#temporals.format(invoice.date, 'dd-MMM-yyyy')}">15-Jan-2024</td>
+                                <td th:text="${invoice.customerName}">Sharma Traders</td>
+                                <td class="text-end">
+                                    <strong th:text="'₹' + ${#numbers.formatDecimal(invoice.totalAmount, 0, 'COMMA', 2, 'POINT')}">₹45,500.00</strong>
+                                </td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${invoice.status == 'PAID' ? 'bg-success' : 
+                                                           invoice.status == 'SENT' ? 'bg-info' : 
+                                                           invoice.status == 'OVERDUE' ? 'bg-danger' : 'bg-secondary'}"
+                                          th:text="${invoice.status}">PAID</span>
+                                </td>
+                                <td class="text-end">
+                                    <a th:href="@{/invoice/view/{id}(id=${invoice.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i> <span th:text="#{billing.view}">View</span>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(invoices)}">
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                    <p class="mt-2" th:text="#{billing.no.invoices}">No invoices found</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white" th:if="${!#lists.isEmpty(invoices)}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-muted">
+                        <span th:text="#{billing.showing}">Showing</span> 
+                        <strong th:text="${invoices.size()}">10</strong> 
+                        <span th:text="#{billing.invoices}">invoices</span>
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
