@@ -4,7 +4,9 @@ import com.example.accountiui.dto.TransactionDto;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,6 +22,8 @@ public class BankingController {
         model.addAttribute("transactions", createCashTransactions());
         model.addAttribute("openingBalance", new BigDecimal("100000.00"));
         model.addAttribute("closingBalance", new BigDecimal("125000.00"));
+        model.addAttribute("totalReceipts", new BigDecimal("117500.00"));
+        model.addAttribute("totalPayments", new BigDecimal("50500.00"));
         return "banking/cash-book";
     }
 
@@ -28,7 +32,37 @@ public class BankingController {
         model.addAttribute("transactions", createBankTransactions());
         model.addAttribute("openingBalance", new BigDecimal("400000.00"));
         model.addAttribute("closingBalance", new BigDecimal("456780.50"));
+        model.addAttribute("totalReceipts", new BigDecimal("310000.00"));
+        model.addAttribute("totalPayments", new BigDecimal("156719.50"));
         return "banking/bank-book";
+    }
+
+    @PostMapping("/receipt/save")
+    public String saveReceipt(TransactionDto transaction, RedirectAttributes redirectAttributes) {
+        // In a real application, this would save to database
+        // For now, just redirect with success message
+        redirectAttributes.addFlashAttribute("successMessage", "Receipt added successfully!");
+        
+        // Determine redirect URL based on account type (cash or bank)
+        String redirectUrl = "cash".equalsIgnoreCase(transaction.getAccountName()) 
+            ? "redirect:/banking/cash-book" 
+            : "redirect:/banking/bank-book";
+        
+        return redirectUrl;
+    }
+
+    @PostMapping("/payment/save")
+    public String savePayment(TransactionDto transaction, RedirectAttributes redirectAttributes) {
+        // In a real application, this would save to database
+        // For now, just redirect with success message
+        redirectAttributes.addFlashAttribute("successMessage", "Payment added successfully!");
+        
+        // Determine redirect URL based on account type (cash or bank)
+        String redirectUrl = "cash".equalsIgnoreCase(transaction.getAccountName()) 
+            ? "redirect:/banking/cash-book" 
+            : "redirect:/banking/bank-book";
+        
+        return redirectUrl;
     }
 
     private List<TransactionDto> createCashTransactions() {

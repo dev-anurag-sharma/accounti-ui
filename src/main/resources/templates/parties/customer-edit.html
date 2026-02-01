@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/layout :: head(#{parties.edit.customer})}"></div>
+</head>
+<body th:replace="~{fragments/layout :: layout(#{parties.edit.customer}, ~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 th:text="#{parties.edit.customer}">Edit Customer</h2>
+                <p class="text-muted" th:text="#{parties.update.customer.description}">Update customer information</p>
+            </div>
+            <div>
+                <button class="btn btn-outline-secondary" onclick="location.href='/parties/customers'">
+                    <i class="bi bi-arrow-left"></i> <span th:text="#{common.back}">Back</span>
+                </button>
+            </div>
+        </div>
+
+        <form th:action="@{/parties/customers/save}" method="post" th:object="${party}">
+            <input type="hidden" th:field="*{id}">
+            
+            <div class="row g-4">
+                <!-- Basic Information -->
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0" th:text="#{parties.basic.info}">Basic Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="name" class="form-label" th:text="#{parties.name}">Name <span class="text-danger">*</span></label>
+                                    <input type="text" id="name" th:field="*{name}" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="contactPerson" class="form-label" th:text="#{parties.contact.person}">Contact Person</label>
+                                    <input type="text" id="contactPerson" th:field="*{contactPerson}" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label" th:text="#{parties.phone}">Phone <span class="text-danger">*</span></label>
+                                    <input type="tel" id="phone" th:field="*{phone}" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label" th:text="#{parties.email}">Email</label>
+                                    <input type="email" id="email" th:field="*{email}" class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="gstin" class="form-label" th:text="#{parties.gstin}">GSTIN</label>
+                                    <input type="text" id="gstin" th:field="*{gstin}" class="form-control" maxlength="15">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Information -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0" th:text="#{parties.address}">Address</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="address" class="form-label" th:text="#{parties.street.address}">Street Address</label>
+                                    <textarea id="address" th:field="*{address}" class="form-control" rows="2"></textarea>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="city" class="form-label" th:text="#{parties.city}">City</label>
+                                    <input type="text" id="city" th:field="*{city}" class="form-control">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="state" class="form-label" th:text="#{parties.state}">State</label>
+                                    <input type="text" id="state" th:field="*{state}" class="form-control">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="pincode" class="form-label" th:text="#{parties.pincode}">Pincode</label>
+                                    <input type="text" id="pincode" th:field="*{pincode}" class="form-control" maxlength="6">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Information -->
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0" th:text="#{parties.financial.info}">Financial Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label for="openingBalance" class="form-label" th:text="#{parties.opening.balance}">Opening Balance</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        <input type="number" id="openingBalance" th:field="*{openingBalance}" 
+                                               class="form-control" step="0.01">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label for="currentBalance" class="form-label" th:text="#{parties.current.balance}">Current Balance</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        <input type="number" id="currentBalance" th:field="*{currentBalance}" 
+                                               class="form-control" step="0.01" readonly>
+                                    </div>
+                                    <small class="text-muted">This is calculated automatically</small>
+                                </div>
+                                <div class="col-12">
+                                    <label for="creditLimit" class="form-label" th:text="#{parties.credit.limit}">Credit Limit</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        <input type="number" id="creditLimit" th:field="*{creditLimit}" 
+                                               class="form-control" step="0.01">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label for="paymentTerms" class="form-label" th:text="#{parties.payment.terms}">Payment Terms</label>
+                                    <select id="paymentTerms" th:field="*{paymentTerms}" class="form-select">
+                                        <option value="Net 15 days">Net 15 days</option>
+                                        <option value="Net 30 days">Net 30 days</option>
+                                        <option value="Net 45 days">Net 45 days</option>
+                                        <option value="Net 60 days">Net 60 days</option>
+                                        <option value="COD">Cash on Delivery</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="active" 
+                                               th:field="*{active}">
+                                        <label class="form-check-label" for="active" th:text="#{parties.active}">Active</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> <span th:text="#{common.update}">Update Customer</span>
+                                </button>
+                                <a href="/parties/customers" class="btn btn-outline-danger">
+                                    <i class="bi bi-x-circle"></i> <span th:text="#{common.cancel}">Cancel</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <input type="hidden" th:field="*{type}" value="CUSTOMER">
+        </form>
+    </div>
+</body>
+</html>
