@@ -51,11 +51,11 @@
                     <div class="col-md-6 text-md-end">
                         <h2 class="text-primary mb-3" th:text="#{purchase.order}">PURCHASE ORDER</h2>
                         <h4 class="mb-3">
-                            <span class="badge bg-primary" th:text="${purchase.number}">PUR-2024-001</span>
+                            <span class="badge bg-primary" th:text="${purchase.purchaseNumber}">PUR-2024-001</span>
                         </h4>
                         <p class="mb-3">
                             <strong th:text="#{purchase.date}">Date:</strong> 
-                            <span th:text="${#temporals.format(purchase.date, 'dd-MMM-yyyy')}">15-Jan-2024</span>
+                            <span th:text="${#temporals.format(purchase.purchaseDate, 'dd-MMM-yyyy')}">15-Jan-2024</span>
                         </p>
                         <span class="badge fs-6" 
                               th:classappend="${purchase.status == 'PAID' ? 'bg-success' : 
@@ -88,11 +88,11 @@
                             <table class="table table-sm table-borderless">
                                 <tr>
                                     <td><strong th:text="#{purchase.no}">Purchase No:</strong></td>
-                                    <td th:text="${purchase.number}">PUR-2024-001</td>
+                                    <td th:text="${purchase.purchaseNumber}">PUR-2024-001</td>
                                 </tr>
                                 <tr>
                                     <td><strong th:text="#{purchase.date}">Purchase Date:</strong></td>
-                                    <td th:text="${#temporals.format(purchase.date, 'dd-MMM-yyyy')}">15-Jan-2024</td>
+                                    <td th:text="${#temporals.format(purchase.purchaseDate, 'dd-MMM-yyyy')}">15-Jan-2024</td>
                                 </tr>
                                 <tr>
                                     <td><strong th:text="#{purchase.status}">Status:</strong></td>
