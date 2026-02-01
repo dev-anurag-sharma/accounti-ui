@@ -51,11 +51,11 @@
                     <div class="col-md-6 text-md-end">
                         <h2 class="text-primary mb-3" th:text="#{billing.invoice}">INVOICE</h2>
                         <h4 class="mb-3">
-                            <span class="badge bg-primary" th:text="${invoice.number}">INV-2024-001</span>
+                            <span class="badge bg-primary" th:text="${invoice.invoiceNumber}">INV-2024-001</span>
                         </h4>
                         <p class="mb-1">
                             <strong th:text="#{billing.date}">Date:</strong> 
-                            <span th:text="${#temporals.format(invoice.date, 'dd-MMM-yyyy')}">15-Jan-2024</span>
+                            <span th:text="${#temporals.format(invoice.invoiceDate, 'dd-MMM-yyyy')}">15-Jan-2024</span>
                         </p>
                         <p class="mb-3">
                             <strong th:text="#{billing.due.date}">Due Date:</strong> 
