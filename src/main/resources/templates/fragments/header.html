@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<nav th:fragment="header" class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow">
+    <div class="container-fluid">
+        <!-- Brand -->
+        <a class="navbar-brand fw-bold" th:href="@{/dashboard}">
+            <i class="bi bi-calculator"></i>
+            <span th:text="#{app.name}">Accounti</span>
+        </a>
+        
+        <!-- Mobile Toggle -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Search (optional) -->
+            <form class="d-flex mx-auto my-2 my-lg-0" style="max-width: 400px;">
+                <input class="form-control me-2" type="search" th:placeholder="#{common.search}" aria-label="Search">
+            </form>
+            
+            <!-- Right Menu -->
+            <ul class="navbar-nav ms-auto">
+                <!-- Language Selector -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="langDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-translate"></i>
+                        <span class="d-none d-lg-inline" th:text="#{common.language}">Language</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" th:href="@{''(lang=en)}">
+                            <i class="bi bi-globe"></i> English
+                        </a></li>
+                        <li><a class="dropdown-item" th:href="@{''(lang=hi)}">
+                            <i class="bi bi-globe-asia-australia"></i> हिंग्लिश (Hinglish)
+                        </a></li>
+                    </ul>
+                </li>
+                
+                <!-- Theme Toggle -->
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" id="themeToggle" type="button">
+                        <i class="bi bi-moon-stars" id="themeIcon"></i>
+                        <span class="d-none d-lg-inline" th:text="#{common.darkmode}">Dark Mode</span>
+                    </button>
+                </li>
+                
+                <!-- User Menu -->
+                <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i>
+                        <span class="d-none d-lg-inline" sec:authentication="name">User</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" th:href="@{/settings}">
+                            <i class="bi bi-gear"></i> <span th:text="#{common.settings}">Settings</span>
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post">
+                                <button class="dropdown-item" type="submit">
+                                    <i class="bi bi-box-arrow-right"></i> <span th:text="#{common.logout}">Logout</span>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</body>
+</html>
