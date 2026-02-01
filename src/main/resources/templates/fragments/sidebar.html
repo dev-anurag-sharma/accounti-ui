@@ -6,8 +6,7 @@
         <ul class="nav flex-column">
             <!-- Dashboard -->
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/dashboard}" 
-                   th:classappend="${#request.requestURI == '/dashboard' ? 'active' : ''}">
+                <a class="nav-link" th:href="@{/dashboard}">
                     <i class="bi bi-speedometer2"></i>
                     <span th:text="#{menu.dashboard}">Dashboard</span>
                 </a>
